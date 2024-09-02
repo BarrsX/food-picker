@@ -1,15 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
+const theme = createTheme({
+  // You can customize the theme here
+});
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
   </React.StrictMode>
 );
 
