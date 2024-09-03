@@ -77,6 +77,14 @@ function App() {
     libraries: ['places'],
   });
 
+  const selectAllTypes = () => {
+    setSelectedTypes(types);
+  };
+
+  const deselectAllTypes = () => {
+    setSelectedTypes([]);
+  };
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -107,6 +115,14 @@ function App() {
               <Typography variant="h6" gutterBottom>
                 Select Food Types:
               </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Button variant="outlined" size="small" onClick={selectAllTypes}>
+                  Select All
+                </Button>
+                <Button variant="outlined" size="small" onClick={deselectAllTypes}>
+                  Deselect All
+                </Button>
+              </Box>
               <FormGroup>
                 {types.map(type => (
                   <FormControlLabel
