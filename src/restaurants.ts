@@ -76,6 +76,7 @@ export const restaurants: Restaurant[] = [
   { name: "Donutste", type: "Desserts" },
   { name: "Parkesdale Farm Market", type: "Desserts" },
   { name: "Parlor Doughnuts", type: "Desserts" },
+  { name: "Kori Bakery", type: "Desserts" },
 ];
 
 // Add this line at the end of the file if there are no other exports
