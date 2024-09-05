@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/food-picker/static/js/main.becb46a2.js",
+    "main.js": "/food-picker/static/js/main.fc6f2872.js",
     "static/js/453.8d4c44f8.chunk.js": "/food-picker/static/js/453.8d4c44f8.chunk.js",
     "index.html": "/food-picker/index.html",
-    "main.becb46a2.js.map": "/food-picker/static/js/main.becb46a2.js.map",
+    "main.fc6f2872.js.map": "/food-picker/static/js/main.fc6f2872.js.map",
     "453.8d4c44f8.chunk.js.map": "/food-picker/static/js/453.8d4c44f8.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.becb46a2.js"
+    "static/js/main.fc6f2872.js"
   ]
 }
