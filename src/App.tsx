@@ -14,12 +14,15 @@ import { Restaurant, restaurants } from './restaurants';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 
+const libraries: ("places")[] = ['places'];
+
 function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [userLocation, setUserLocation] = useState<google.maps.LatLngLiteral | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral | null>(null);
+  const [showAdBlockerWarning, setShowAdBlockerWarning] = useState(false);
 
   const types = Array.from(new Set(restaurants.map(r => r.type)));
 
@@ -74,7 +77,7 @@ function App() {
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "",
-    libraries: ['places'],
+    libraries: libraries,
   });
 
   const selectAllTypes = () => {
@@ -103,8 +106,27 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    const testAdBlocker = async () => {
+      try {
+        await fetch('https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true');
+      } catch (error) {
+        setShowAdBlockerWarning(true);
+      }
+    };
+    testAdBlocker();
+  }, []);
+
   return (
     <Container maxWidth="lg">
+      {showAdBlockerWarning && (
+        <Box sx={{ backgroundColor: 'warning.main', color: 'warning.contrastText', p: 2, mb: 2 }}>
+          <Typography>
+            It looks like you might be using an ad blocker. Some features of the map may not work correctly. 
+            Consider disabling it for this site for the best experience.
+          </Typography>
+        </Box>
+      )}
       <Box sx={{ my: 4 }}>
         <Typography variant="h3" component="h1" gutterBottom>
           Orlando Random Restaurant Picker
