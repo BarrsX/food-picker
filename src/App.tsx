@@ -13,6 +13,7 @@ import {
 import { Restaurant, restaurants } from './restaurants';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { GoogleMap, Marker } from '@react-google-maps/api';
+import { useLoadScript } from "@react-google-maps/api";
 
 const libraries: ("places")[] = ['places'];
 
@@ -36,31 +37,41 @@ function App() {
     setSelectedRestaurant(selected);
 
     if (userLocation && isLoaded) {
-      const geocoder = new google.maps.Geocoder();
-      geocoder.geocode({ address: selected.name + ', Orlando, FL' }, (results, status) => {
-        if (status === 'OK' && results && results[0]) {
-          const restaurantLocation = results[0].geometry.location;
-          setMapCenter({ lat: restaurantLocation.lat(), lng: restaurantLocation.lng() });
-          const service = new google.maps.DistanceMatrixService();
-          service.getDistanceMatrix(
-            {
-              origins: [userLocation],
-              destinations: [restaurantLocation],
-              travelMode: google.maps.TravelMode.DRIVING,
-            },
-            (response, status) => {
-              if (status === 'OK' && response) {
-                const distanceInKm = parseFloat(response.rows[0].elements[0].distance.text);
-                const distanceInMiles = (distanceInKm * 0.621371).toFixed(2);
-                const durationText = response.rows[0].elements[0].duration.text;
-                setDistance(`${distanceInMiles} miles (${durationText} driving)`);
-              } else {
-                setDistance(null);
+      const service = new google.maps.places.PlacesService(document.createElement('div'));
+      const request = {
+        location: userLocation,
+        radius: 50000, // Search within 50km
+        keyword: selected.name,
+        type: 'restaurant'
+      };
+
+      service.nearbySearch(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results && results[0]) {
+          const closestLocation = results[0].geometry?.location;
+          if (closestLocation) {
+            setMapCenter({ lat: closestLocation.lat(), lng: closestLocation.lng() });
+            
+            const distanceService = new google.maps.DistanceMatrixService();
+            distanceService.getDistanceMatrix(
+              {
+                origins: [userLocation],
+                destinations: [closestLocation],
+                travelMode: google.maps.TravelMode.DRIVING,
+              },
+              (response, status) => {
+                if (status === 'OK' && response) {
+                  const distanceInMeters = response.rows[0].elements[0].distance.value;
+                  const distanceInMiles = (distanceInMeters / 1609.344).toFixed(2);
+                  const durationText = response.rows[0].elements[0].duration.text;
+                  setDistance(`${distanceInMiles} miles (${durationText} driving)`);
+                } else {
+                  setDistance(null);
+                }
               }
-            }
-          );
+            );
+          }
         } else {
-          console.error('Geocode was not successful for the following reason: ' + status);
+          console.error('Places search was not successful');
           setDistance(null);
         }
       });
@@ -75,9 +86,9 @@ function App() {
     );
   };
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "",
-    libraries: libraries,
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string,
+    libraries: ["places"],
   });
 
   const selectAllTypes = () => {
