@@ -42,8 +42,11 @@ export const restaurants: Restaurant[] = [
 
   // Italian
   { name: "Mia's Italian Kitchen", type: "Italian" },
-  { name: "Butter Crust Pizza", type: "Italian" },
-  { name: "Dough Boys Pizzeria", type: "Italian" },
+
+  // Pizza
+  { name: "V Pizza", type: "Pizza" },
+  { name: "Butter Crust Pizza", type: "Pizza" },
+  { name: "Dough Boys Pizzeria", type: "Pizza" },
 
   // Hispanic
   { name: "Francisco's taco madness", type: "Hispanic" },
@@ -79,5 +82,4 @@ export const restaurants: Restaurant[] = [
   { name: "Kori Bakery", type: "Desserts" },
 ];
 
-// Add this line at the end of the file if there are no other exports
 export {};
