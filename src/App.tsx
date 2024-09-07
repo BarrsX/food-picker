@@ -192,6 +192,7 @@ function App() {
               onClick={pickRandom} 
               fullWidth
               size="large"
+              sx={{ py: 2, fontSize: '1.2rem' }}
             >
               Pick a Random Restaurant
             </Button>
@@ -199,10 +200,10 @@ function App() {
           <Grid item xs={12} md={8}>
             {selectedRestaurant ? (
               <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
-                <Typography variant="h5" gutterBottom>
+                <Typography variant="h5" gutterBottom color="text.primary">
                   Selected Restaurant:
                 </Typography>
-                <Typography variant="h4">
+                <Typography variant="h4" color="primary.main">
                   {selectedRestaurant.name}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
