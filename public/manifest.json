@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Orlando Food Picker",
+  "name": "Orlando Random Restaurant Picker",
   "icons": [
     {
       "src": "favicon.ico",

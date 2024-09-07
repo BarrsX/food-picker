@@ -1,21 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Container, 
-  Typography, 
-  Button, 
-  FormGroup, 
-  FormControlLabel, 
-  Checkbox, 
-  Paper, 
-  Box,
-  Grid
-} from '@mui/material';
-import { Restaurant, restaurants } from './restaurants';
-import { useJsApiLoader } from '@react-google-maps/api';
-import { GoogleMap, Marker } from '@react-google-maps/api';
-import { useLoadScript } from "@react-google-maps/api";
+import { useEffect, useState } from 'react';
 
-const libraries: ("places")[] = ['places'];
+import { useLoadScript } from "@react-google-maps/api";
+import { GoogleMap, Marker } from '@react-google-maps/api';
+import { Box, Button, Checkbox, Container, FormControlLabel, FormGroup, Grid, Paper, Typography } from '@mui/material';
+
+import { Restaurant, restaurants } from './restaurants';
 
 function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
