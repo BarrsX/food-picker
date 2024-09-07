@@ -5,6 +5,7 @@ import { GoogleMap, Marker } from '@react-google-maps/api';
 import { Box, Button, Checkbox, Container, FormControlLabel, FormGroup, Grid, Paper, Typography } from '@mui/material';
 
 import { Restaurant, restaurants } from './restaurants';
+import logo from './logo.png'; // Make sure to add your logo file to the src folder
 
 function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
@@ -127,10 +128,35 @@ function App() {
           </Typography>
         </Box>
       )}
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom>
+      <Box sx={{ 
+        my: 4, 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'flex-start'  // Changed from 'space-between' to 'flex-start'
+      }}>
+        <img 
+          src={logo} 
+          alt="Logo" 
+          style={{ 
+            width: '60px',  // Slightly increased size
+            height: '60px', 
+            marginRight: '20px'
+          }} 
+        />
+        <Typography 
+          variant="h4"  // Changed from h3 to h4 for better proportion
+          component="h1" 
+          sx={{ 
+            marginBottom: 0,  // Remove bottom margin
+            display: 'flex',
+            alignItems: 'center',
+            height: '60px'  // Match the height of the logo
+          }}
+        >
           Orlando Random Restaurant Picker
         </Typography>
+      </Box>
+      <Box sx={{ my: 4 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
             <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
