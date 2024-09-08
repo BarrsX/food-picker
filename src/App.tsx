@@ -8,10 +8,10 @@ import {
   Container,
   FormControlLabel,
   FormGroup,
-  Grid,
   Paper,
   Typography,
 } from "@mui/material";
+import { Grid } from "@mui/material";
 
 import { Restaurant, restaurants } from "./restaurants";
 import logo from "./logo.png";
@@ -58,13 +58,12 @@ function App() {
         document.createElement("div")
       );
       const request = {
+        query: `${selected.name} near me`,
         location: userLocation,
         radius: 50000,
-        keyword: selected.name,
-        type: "restaurant",
       };
 
-      service.nearbySearch(request, (results, status) => {
+      service.textSearch(request, (results, status) => {
         if (
           status === google.maps.places.PlacesServiceStatus.OK &&
           results &&
@@ -287,13 +286,15 @@ function App() {
                     </Typography>
                   )}
                   {mapCenter && (
-                    <Box sx={{ height: 300, width: "100%", mt: 2 }}>
+                    <Box
+                      sx={{ height: 300, width: "100%", mt: 2 }}
+                      className="map-container"
+                    >
                       <Map
                         mapId={process.env.REACT_APP_GOOGLE_MAP_ID}
                         zoom={15}
                         center={mapCenter}
-                        gestureHandling={"greedy"}
-                        disableDefaultUI={true}
+                        style={{ width: "100%", height: "100%" }}
                       >
                         <AdvancedMarker position={mapCenter} />
                       </Map>
