@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import { useLoadScript } from "@react-google-maps/api";
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import { Box, Button, Checkbox, Container, FormControlLabel, FormGroup, Grid, Paper, Typography } from '@mui/material';
 
 import { Restaurant, restaurants } from './restaurants';
-import logo from './logo.png'; // Make sure to add your logo file to the src folder
+import logo from './logo.png';
+
+import { Libraries } from "@react-google-maps/api";
+
+const libraries: Libraries = ["places"];
 
 function App() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
@@ -78,7 +82,7 @@ function App() {
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string,
-    libraries: ["places"],
+    libraries: libraries, // Use the constant defined outside the component
   });
 
   const selectAllTypes = () => {
