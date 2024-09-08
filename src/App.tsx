@@ -34,7 +34,7 @@ function App() {
       const service = new google.maps.places.PlacesService(document.createElement('div'));
       const request = {
         location: userLocation,
-        radius: 50000, // Search within 50km
+        radius: 50000,
         keyword: selected.name,
         type: 'restaurant'
       };
@@ -82,7 +82,7 @@ function App() {
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string,
-    libraries: libraries, // Use the constant defined outside the component
+    libraries: libraries,
   });
 
   const selectAllTypes = () => {
@@ -136,25 +136,25 @@ function App() {
         my: 4, 
         display: 'flex', 
         alignItems: 'center', 
-        justifyContent: 'flex-start'  // Changed from 'space-between' to 'flex-start'
+        justifyContent: 'flex-start'
       }}>
         <img 
           src={logo} 
           alt="Logo" 
           style={{ 
-            width: '60px',  // Slightly increased size
+            width: '60px',
             height: '60px', 
             marginRight: '20px'
           }} 
         />
         <Typography 
-          variant="h4"  // Changed from h3 to h4 for better proportion
+          variant="h4"
           component="h1" 
           sx={{ 
-            marginBottom: 0,  // Remove bottom margin
+            marginBottom: 0,
             display: 'flex',
             alignItems: 'center',
-            height: '60px'  // Match the height of the logo
+            height: '60px'
           }}
         >
           Orlando Random Restaurant Picker
