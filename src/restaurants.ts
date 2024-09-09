@@ -47,10 +47,11 @@ export const restaurants: Restaurant[] = [
   // Pizza
   { name: "V Pizza", type: "Pizza" },
   { name: "Butter Crust Pizza", type: "Pizza" },
-  { name: "Dough Boys Pizzeria", type: "Pizza" },
+  { name: "Dough Boyz Pizzeria", type: "Pizza" },
 
   // Hispanic
   { name: "Francisco's taco madness", type: "Hispanic" },
+  { name: "Fui Yo Mexicana", type: "Hispanic" },
 
   // Wings
   { name: "That Wing Spot", type: "Wings" },
