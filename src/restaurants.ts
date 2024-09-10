@@ -23,6 +23,7 @@ export const restaurants: Restaurant[] = [
   { name: "Alex's gyro and cheesesteaks", type: "American" },
   { name: "Beef N' Buns", type: "American" },
   { name: "Black Bear Kitchen", type: "American" },
+
   // Japanese
   { name: "Kura Sushi", type: "Japanese" },
   { name: "Token Ramen", type: "Japanese" },
@@ -63,6 +64,7 @@ export const restaurants: Restaurant[] = [
   { name: "World Food Trucks", type: "International" },
   { name: "Sticky rice", type: "International" },
   { name: "EggDose", type: "International" },
+  { name: "Hawkers Asian Street Food", type: "International" },
 
   // Soul Food
   { name: "Ez Eats Afro Soul Food", type: "Soul Food" },
