@@ -85,6 +85,7 @@ export const restaurants: Restaurant[] = [
   { name: "Parlor Doughnuts", type: "Desserts" },
   { name: "Kori Bakery", type: "Desserts" },
   { name: "The Salty Donut", type: "Desserts" },
+  { name: "Picasso Moments Bakery, Cafe, & Boba Tea", type: "Desserts" },
 
   // Fast Food
   { name: "McDonald's", type: "Fast Food" },
