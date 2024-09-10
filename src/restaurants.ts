@@ -22,7 +22,7 @@ export const restaurants: Restaurant[] = [
   { name: "Willie boys bbq", type: "American" },
   { name: "Alex's gyro and cheesesteaks", type: "American" },
   { name: "Beef N' Buns", type: "American" },
-
+  { name: "Black Bear Kitchen", type: "American" },
   // Japanese
   { name: "Kura Sushi", type: "Japanese" },
   { name: "Token Ramen", type: "Japanese" },
