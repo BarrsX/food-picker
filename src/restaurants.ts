@@ -53,6 +53,7 @@ export const restaurants: Restaurant[] = [
   // Hispanic
   { name: "Francisco's taco madness", type: "Hispanic" },
   { name: "Fui Yo Mexicana", type: "Hispanic" },
+  { name: "Superica Winter Park", type: "Hispanic" },
 
   // Wings
   { name: "That Wing Spot", type: "Wings" },
@@ -65,6 +66,7 @@ export const restaurants: Restaurant[] = [
   { name: "Sticky rice", type: "International" },
   { name: "EggDose", type: "International" },
   { name: "Hawkers Asian Street Food", type: "International" },
+  { name: "Kai Kai BBQ & Dumplings", type: "International" },
 
   // Soul Food
   { name: "Ez Eats Afro Soul Food", type: "Soul Food" },
@@ -86,6 +88,7 @@ export const restaurants: Restaurant[] = [
   { name: "Kori Bakery", type: "Desserts" },
   { name: "The Salty Donut", type: "Desserts" },
   { name: "Picasso Moments Bakery, Cafe, & Boba Tea", type: "Desserts" },
+  { name: "Gideon's Bakehouse", type: "Desserts" },
 
   // Fast Food
   { name: "McDonald's", type: "Fast Food" },
