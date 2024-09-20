@@ -24,6 +24,8 @@ export const restaurants: Restaurant[] = [
   { name: "Beef N' Buns", type: "American" },
   { name: "Black Bear Kitchen", type: "American" },
   { name: "TooJay’s Deli • Bakery • Restaurant", type: "American" },
+  { name: "Irregular Smash", type: "American" },
+  { name: "LoveBird Almost Famous Chicken", type: "American" },
 
   // Japanese
   { name: "Kura Sushi", type: "Japanese" },
@@ -90,6 +92,7 @@ export const restaurants: Restaurant[] = [
   { name: "The Salty Donut", type: "Desserts" },
   { name: "Picasso Moments Bakery, Cafe, & Boba Tea", type: "Desserts" },
   { name: "Gideon's Bakehouse", type: "Desserts" },
+  { name: "Mango Mango Dessert - Orlando", type: "Desserts" },
 
   // Fast Food
   { name: "McDonald's", type: "Fast Food" },
