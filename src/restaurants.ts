@@ -77,6 +77,7 @@ export const restaurants: Restaurant[] = [
   { name: "Uncle Tony's Backyard bbq", type: "Soul Food" },
   { name: "Kook'n with Kim", type: "Soul Food" },
   { name: "Chicken fire", type: "Soul Food" },
+  { name: "Voodoo Bayou", type: "Soul Food" },
 
   // Sweets and Desserts
   { name: "Joury Ice Cream & Cafe", type: "Desserts" },
