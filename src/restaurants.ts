@@ -95,6 +95,7 @@ export const restaurants: Restaurant[] = [
   { name: "Picasso Moments Bakery, Cafe, & Boba Tea", type: "Desserts" },
   { name: "Gideon's Bakehouse", type: "Desserts" },
   { name: "Mango Mango Dessert - Orlando", type: "Desserts" },
+  { name: "Harmony Tea Shoppe", type: "Desserts" },
 
   // Fast Food
   { name: "McDonald's", type: "Fast Food" },
