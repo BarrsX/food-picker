@@ -26,6 +26,7 @@ export const restaurants: Restaurant[] = [
   { name: "TooJay’s Deli • Bakery • Restaurant", type: "American" },
   { name: "Irregular Smash", type: "American" },
   { name: "LoveBird Almost Famous Chicken", type: "American" },
+  { name: "Chicken fire", type: "American" },
 
   // Japanese
   { name: "Kura Sushi", type: "Japanese" },
@@ -76,7 +77,6 @@ export const restaurants: Restaurant[] = [
   { name: "Ez Eats Afro Soul Food", type: "Soul Food" },
   { name: "Uncle Tony's Backyard bbq", type: "Soul Food" },
   { name: "Kook'n with Kim", type: "Soul Food" },
-  { name: "Chicken fire", type: "Soul Food" },
   { name: "Voodoo Bayou", type: "Soul Food" },
 
   // Sweets and Desserts
