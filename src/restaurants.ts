@@ -75,6 +75,9 @@ export const restaurants: Restaurant[] = [
   { name: "Alvin's Cuisine", type: "International" },
   { name: "Rion's Ocean Room", type: "International" },
 
+  // Chinese
+  { name: "East Garden Chinese Restaurant", type: "Chinese" },
+
   // Soul Food
   { name: "Ez Eats Afro Soul Food", type: "Soul Food" },
   { name: "Uncle Tony's Backyard bbq", type: "Soul Food" },
