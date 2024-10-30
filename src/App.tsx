@@ -292,8 +292,8 @@ function App() {
                     >
                       <Map
                         mapId={process.env.REACT_APP_GOOGLE_MAP_ID}
-                        defaultZoom={15}
-                        defaultCenter={{lat: mapCenter.lat, lng: mapCenter.lng}}
+                        zoom={15}
+                        center={{lat: mapCenter.lat, lng: mapCenter.lng}}
                         style={{ width: "100%", height: "100%" }}
                       >
                         <AdvancedMarker position={{lat: mapCenter.lat, lng: mapCenter.lng}} />

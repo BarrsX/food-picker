@@ -26,7 +26,6 @@ export const restaurants: Restaurant[] = [
   { name: "TooJay’s Deli • Bakery • Restaurant", type: "American" },
   { name: "Irregular Smash", type: "American" },
   { name: "LoveBird Almost Famous Chicken", type: "American" },
-  { name: "Chicken fire", type: "American" },
 
   // Japanese
   { name: "Kura Sushi", type: "Japanese" },
