@@ -101,6 +101,7 @@ export const restaurants: Restaurant[] = [
   { name: "Mango Mango Dessert - Orlando", type: "Desserts" },
   { name: "Harmony Tea Shoppe", type: "Desserts" },
   { name: "Yeast Coast Bakehouse", type: "Desserts" },
+  { name: "Peach Cobbler Factory", type: "Desserts" },
 
   // Fast Food
   { name: "McDonald's", type: "Fast Food" },
