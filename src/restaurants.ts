@@ -35,6 +35,10 @@ export const restaurants: Restaurant[] = [
   { name: "Wa Ramen", type: "Japanese" },
   { name: "Zaru", type: "Japanese" },
   { name: "The bao spot", type: "Japanese" },
+  {
+    name: "mosonori | Japanese handroll sushi bar | Winter Park",
+    type: "Japanese",
+  },
 
   // Korean
   { name: "The Mongolorian BBQ", type: "Korean" },
