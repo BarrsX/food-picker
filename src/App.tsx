@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useLoadScript } from "@react-google-maps/api";
 import { Map, AdvancedMarker, APIProvider } from "@vis.gl/react-google-maps";
 import {
@@ -16,7 +16,47 @@ import { Grid } from "@mui/material";
 import { Restaurant, restaurants } from "./restaurants";
 import logo from "./logo.png";
 
+const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string;
+const GOOGLE_MAP_ID = process.env.REACT_APP_GOOGLE_MAP_ID as string;
 const libraries: "places"[] = ["places"];
+
+interface RestaurantMapProps {
+  mapCenter: google.maps.LatLngLiteral;
+}
+
+const RestaurantMap: React.FC<RestaurantMapProps> = React.memo(
+  ({ mapCenter }) => {
+    const mapRef = useRef<google.maps.Map>();
+
+    useEffect(() => {
+      if (mapRef.current) {
+        mapRef.current.panTo(mapCenter);
+      }
+    }, [mapCenter]);
+
+    return (
+      <Box sx={{ height: 300, width: "100%", mt: 2 }} className="map-container">
+        <Map
+          mapId={GOOGLE_MAP_ID}
+          zoom={15}
+          defaultCenter={mapCenter}
+          gestureHandling={'greedy'}
+          style={{ width: "100%", height: "100%" }}
+          onIdle={(map) => {
+            if (!mapRef.current) {
+              mapRef.current = map.map;
+            }
+          }}
+        >
+          <AdvancedMarker position={mapCenter} />
+        </Map>
+      </Box>
+    );
+  },
+  (prevProps, nextProps) =>
+    prevProps.mapCenter.lat === nextProps.mapCenter.lat &&
+    prevProps.mapCenter.lng === nextProps.mapCenter.lng
+);
 
 function App() {
   const [selectedRestaurant, setSelectedRestaurant] =
@@ -29,10 +69,11 @@ function App() {
     null
   );
   const [showAdBlockerWarning, setShowAdBlockerWarning] = useState(false);
+  const placesServiceRef = useRef<google.maps.places.PlacesService>();
 
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string,
-    libraries: libraries,
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    libraries,
   });
 
   const types = useMemo(
@@ -48,22 +89,43 @@ function App() {
     [selectedTypes]
   );
 
-  const pickRandom = () => {
+  const handleTypeChange = useCallback((type: string) => {
+    setSelectedTypes((prevTypes) =>
+      prevTypes.includes(type)
+        ? prevTypes.filter((t) => t !== type)
+        : [...prevTypes, type]
+    );
+  }, []);
+
+  const selectAllTypes = useCallback(() => {
+    setSelectedTypes(types);
+  }, [types]);
+
+  const deselectAllTypes = useCallback(() => {
+    setSelectedTypes([]);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      placesServiceRef.current = new google.maps.places.PlacesService(
+        document.createElement("div")
+      );
+    }
+  }, [isLoaded]);
+
+  const pickRandom = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * filteredRestaurants.length);
     const selected = filteredRestaurants[randomIndex];
     setSelectedRestaurant(selected);
 
-    if (userLocation) {
-      const service = new google.maps.places.PlacesService(
-        document.createElement("div")
-      );
+    if (userLocation && placesServiceRef.current) {
       const request = {
         query: `${selected.name} near me`,
         location: userLocation,
         radius: 50000,
       };
 
-      service.textSearch(request, (results, status) => {
+      placesServiceRef.current.textSearch(request, (results, status) => {
         if (
           status === google.maps.places.PlacesServiceStatus.OK &&
           results &&
@@ -107,23 +169,7 @@ function App() {
         }
       });
     }
-  };
-
-  const handleTypeChange = (type: string) => {
-    setSelectedTypes((prevTypes) =>
-      prevTypes.includes(type)
-        ? prevTypes.filter((t) => t !== type)
-        : [...prevTypes, type]
-    );
-  };
-
-  const selectAllTypes = () => {
-    setSelectedTypes(types);
-  };
-
-  const deselectAllTypes = () => {
-    setSelectedTypes([]);
-  };
+  }, [filteredRestaurants, userLocation]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -165,7 +211,7 @@ function App() {
   }
 
   return (
-    <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string}>
+    <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
       <Container maxWidth="lg">
         {showAdBlockerWarning && (
           <Box
@@ -285,21 +331,7 @@ function App() {
                       Distance: {distance}
                     </Typography>
                   )}
-                  {mapCenter && (
-                    <Box
-                      sx={{ height: 300, width: "100%", mt: 2 }}
-                      className="map-container"
-                    >
-                      <Map
-                        mapId={process.env.REACT_APP_GOOGLE_MAP_ID}
-                        zoom={15}
-                        defaultCenter={{lat: mapCenter.lat, lng: mapCenter.lng}}
-                        style={{ width: "100%", height: "100%" }}
-                      >
-                        <AdvancedMarker position={{lat: mapCenter.lat, lng: mapCenter.lng}} />
-                      </Map>
-                    </Box>
-                  )}
+                  {mapCenter && <RestaurantMap mapCenter={mapCenter} />}
                 </Paper>
               ) : (
                 <Paper
