@@ -109,6 +109,7 @@ export const restaurants: Restaurant[] = [
   { name: "Alien Treats FL", type: "Desserts" },
   { name: "Gelato Go Winter Garden", type: "Desserts" },
   { name: "Bacio Ice Cream Shop", type: "Desserts" },
+  { name: "Saigon Snow", type: "Desserts" },
 
   // Fast Food
   { name: "McDonald's", type: "Fast Food" },
