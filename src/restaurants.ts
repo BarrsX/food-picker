@@ -39,6 +39,7 @@ export const restaurants: Restaurant[] = [
     name: "mosonori | Japanese handroll sushi bar | Winter Park",
     type: "Japanese",
   },
+  { name: "Palm Beach Meats Orlando", type: "Japanese" },
 
   // Korean
   { name: "The Mongolorian BBQ", type: "Korean" },
@@ -49,6 +50,7 @@ export const restaurants: Restaurant[] = [
   { name: "Gogi hotpot", type: "Korean" },
   { name: "92 chicken", type: "Korean" },
   { name: "Snowbean", type: "Korean" },
+  { name: "The Neighborhood Eatery", type: "Korean" },
 
   // Italian
   { name: "Mia's Italian Kitchen", type: "Italian" },
@@ -109,7 +111,6 @@ export const restaurants: Restaurant[] = [
   { name: "Alien Treats FL", type: "Desserts" },
   { name: "Gelato Go Winter Garden", type: "Desserts" },
   { name: "Bacio Ice Cream Shop", type: "Desserts" },
-  { name: "Saigon Snow", type: "Desserts" },
 
   // Fast Food
   { name: "McDonald's", type: "Fast Food" },
