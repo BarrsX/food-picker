@@ -64,6 +64,7 @@ export const restaurants: Restaurant[] = [
   { name: "Francisco's taco madness", type: "Hispanic" },
   { name: "Fui Yo Mexicana", type: "Hispanic" },
   { name: "Superica Winter Park", type: "Hispanic" },
+  { name: "Orinocos Cafe & Bakery", type: "Hispanic" },
 
   // Wings
   { name: "That Wing Spot", type: "Wings" },
