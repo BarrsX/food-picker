@@ -51,6 +51,7 @@ export const restaurants: Restaurant[] = [
   { name: "92 chicken", type: "Korean" },
   { name: "Snowbean", type: "Korean" },
   { name: "The Neighborhood Eatery", type: "Korean" },
+  { name: "Ma Lu Bian Bian", type: "Korean" },
 
   // Italian
   { name: "Mia's Italian Kitchen", type: "Italian" },
