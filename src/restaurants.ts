@@ -52,6 +52,7 @@ export const restaurants: Restaurant[] = [
   { name: "Snowbean", type: "Korean" },
   { name: "The Neighborhood Eatery", type: "Korean" },
   { name: "Ma Lu Bian Bian", type: "Korean" },
+  { name: "SoGongDong & K-BBQ", type: "Korean" },
 
   // Italian
   { name: "Mia's Italian Kitchen", type: "Italian" },
@@ -66,6 +67,7 @@ export const restaurants: Restaurant[] = [
   { name: "Fui Yo Mexicana", type: "Hispanic" },
   { name: "Superica Winter Park", type: "Hispanic" },
   { name: "Orinocos Cafe & Bakery", type: "Hispanic" },
+  { name: "Corazon by Baires", type: "Hispanic" },
 
   // Wings
   { name: "That Wing Spot", type: "Wings" },
