@@ -40,6 +40,7 @@ export const restaurants: Restaurant[] = [
     type: "Japanese",
   },
   { name: "Palm Beach Meats Orlando", type: "Japanese" },
+  { name: "Edoboy", type: "Japanese" },
 
   // Korean
   { name: "The Mongolorian BBQ", type: "Korean" },
@@ -82,6 +83,7 @@ export const restaurants: Restaurant[] = [
   { name: "Hawkers Asian Street Food", type: "International" },
   { name: "Alvin's Cuisine", type: "International" },
   { name: "Rion's Ocean Room", type: "International" },
+  { name: "True Island Grille", type: "International" },
 
   // Chinese
   { name: "East Garden Chinese Restaurant", type: "Chinese" },
