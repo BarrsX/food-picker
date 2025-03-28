@@ -120,6 +120,10 @@ export const restaurants: Restaurant[] = [
   { name: "Bacio Ice Cream Shop", type: "Desserts" },
   { name: "Saigon Snow", type: "Desserts" },
   { name: "Picasso Moments Bakery, Cafe, & Boba Tea", type: "Desserts" },
+  { name: "The Greenery Creamery", type: "Desserts" },
+  { name: "Frappe Latino", type: "Desserts" },
+  { name: "Bora Bora Smoothie Cafe - Orlando", type: "Desserts" },
+  { name: "The Original Rainbow Cone - Orlando", type: "Desserts" },
 
   // Fast Food
   { name: "McDonald's", type: "Fast Food" },
