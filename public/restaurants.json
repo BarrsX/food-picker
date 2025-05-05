@@ -80,6 +80,10 @@
         "type": "American"
     },
     {
+        "name": "The Whiskey",
+        "type": "American"
+    },
+    {
         "name": "Kura Sushi",
         "type": "Japanese"
     },
@@ -181,6 +185,10 @@
     },
     {
         "name": "Dough Boyz Pizzeria",
+        "type": "Pizza"
+    },
+    {
+        "name": "Mister O1 Extraordinary Pizza - Dr. Phillips",
         "type": "Pizza"
     },
     {
