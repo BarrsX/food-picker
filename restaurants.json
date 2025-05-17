@@ -9,7 +9,7 @@
     },
     {
         "name": "Rise Biscuits",
-        "type": "American"
+        "type": "Breakfast/Brunch"
     },
     {
         "name": "Fresh Kitchen",
@@ -29,11 +29,11 @@
     },
     {
         "name": "Chicken fire",
-        "type": "American"
+        "type": "Chicken Specialty"
     },
     {
         "name": "Smoke and doughnuts",
-        "type": "American"
+        "type": "BBQ/Smokehouse"
     },
     {
         "name": "Jericho drive through",
@@ -41,7 +41,7 @@
     },
     {
         "name": "BAD AS'S BURGERS",
-        "type": "American"
+        "type": "Burger Specialty"
     },
     {
         "name": "Charlie's Kitchen & Grill",
@@ -49,35 +49,35 @@
     },
     {
         "name": "Willie boys bbq",
-        "type": "American"
+        "type": "BBQ/Smokehouse"
     },
     {
         "name": "Alex's gyro and cheesesteaks",
-        "type": "American"
+        "type": "Sandwich Specialty"
     },
     {
         "name": "Beef N' Buns",
-        "type": "American"
+        "type": "Sandwich Specialty"
     },
     {
         "name": "Black Bear Kitchen",
         "type": "American"
     },
     {
-        "name": "TooJay’s Deli • Bakery • Restaurant",
-        "type": "American"
+        "name": "TooJay's Deli • Bakery • Restaurant",
+        "type": "Breakfast/Brunch"
     },
     {
         "name": "Irregular Smash",
-        "type": "American"
+        "type": "Burger Specialty"
     },
     {
         "name": "LoveBird Almost Famous Chicken",
-        "type": "American"
+        "type": "Chicken Specialty"
     },
     {
         "name": "Bad As's Sandwich PRIMROSE",
-        "type": "American"
+        "type": "Sandwich Specialty"
     },
     {
         "name": "The Whiskey",
@@ -89,7 +89,7 @@
     },
     {
         "name": "Token Ramen",
-        "type": "Japanese"
+        "type": "Ramen/Noodles"
     },
     {
         "name": "Kazu Sushi Burrito",
@@ -97,11 +97,11 @@
     },
     {
         "name": "Kyu Ramen",
-        "type": "Japanese"
+        "type": "Ramen/Noodles"
     },
     {
         "name": "Wa Ramen",
-        "type": "Japanese"
+        "type": "Ramen/Noodles"
     },
     {
         "name": "Zaru",
@@ -125,15 +125,15 @@
     },
     {
         "name": "The Mongolorian BBQ",
-        "type": "Korean"
+        "type": "BBQ/Smokehouse"
     },
     {
         "name": "Izziban Sushi & BBQ",
-        "type": "Korean"
+        "type": "BBQ/Smokehouse"
     },
     {
         "name": "Star BBQ Korean",
-        "type": "Korean"
+        "type": "BBQ/Smokehouse"
     },
     {
         "name": "Kbob Korean Street Food",
@@ -141,7 +141,7 @@
     },
     {
         "name": "U TURN KOREAN BBQ",
-        "type": "Korean"
+        "type": "BBQ/Smokehouse"
     },
     {
         "name": "Gogi hotpot",
@@ -149,7 +149,7 @@
     },
     {
         "name": "92 chicken",
-        "type": "Korean"
+        "type": "Chicken Specialty"
     },
     {
         "name": "Snowbean",
@@ -165,11 +165,11 @@
     },
     {
         "name": "SoGongDong & K-BBQ",
-        "type": "Korean"
+        "type": "BBQ/Smokehouse"
     },
     {
         "name": "bb.q Chicken East Colonial",
-        "type": "Korean"
+        "type": "Chicken Specialty"
     },
     {
         "name": "Mia's Italian Kitchen",
@@ -193,19 +193,19 @@
     },
     {
         "name": "Francisco's taco madness",
-        "type": "Hispanic"
+        "type": "Mexican/Tex-Mex"
     },
     {
         "name": "Fui Yo Mexicana",
-        "type": "Hispanic"
+        "type": "Mexican/Tex-Mex"
     },
     {
         "name": "Superica Winter Park",
-        "type": "Hispanic"
+        "type": "Mexican/Tex-Mex"
     },
     {
         "name": "Orinocos Cafe & Bakery",
-        "type": "Hispanic"
+        "type": "Bakery/Café"
     },
     {
         "name": "Corazon by Baires",
@@ -237,7 +237,7 @@
     },
     {
         "name": "EggDose",
-        "type": "International"
+        "type": "Breakfast/Brunch"
     },
     {
         "name": "Hawkers Asian Street Food",
@@ -249,7 +249,7 @@
     },
     {
         "name": "Rion's Ocean Room",
-        "type": "International"
+        "type": "Seafood"
     },
     {
         "name": "True Island Grille",
@@ -269,7 +269,7 @@
     },
     {
         "name": "Uncle Tony's Backyard bbq",
-        "type": "Soul Food"
+        "type": "BBQ/Smokehouse"
     },
     {
         "name": "Kook'n with Kim",
@@ -281,19 +281,19 @@
     },
     {
         "name": "Joury Ice Cream & Cafe",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "JoJos Shake Bar",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "Swirls on the Water",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "Naked Cupcake",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "Lotte Market",
@@ -305,11 +305,11 @@
     },
     {
         "name": "Chiffon Culture",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "Donutste",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "Parkesdale Farm Market",
@@ -317,23 +317,23 @@
     },
     {
         "name": "Parlor Doughnuts",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "Kori Bakery",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "The Salty Donut",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "Picasso Moments Bakery, Cafe, & Boba Tea",
-        "type": "Desserts"
+        "type": "Bubble Tea/Boba"
     },
     {
         "name": "Gideon's Bakehouse",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "Mango Mango Dessert - Orlando",
@@ -341,15 +341,15 @@
     },
     {
         "name": "Harmony Tea Shoppe",
-        "type": "Desserts"
+        "type": "Bubble Tea/Boba"
     },
     {
         "name": "Yeast Coast Bakehouse",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "Peach Cobbler Factory",
-        "type": "Desserts"
+        "type": "Bakery/Café"
     },
     {
         "name": "Alien Treats FL",
@@ -357,47 +357,47 @@
     },
     {
         "name": "Nola's Ice Cream",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "La Carraia Florida Gelateria",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "Gelato Go Winter Garden",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "Bacio Ice Cream Shop",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "MÖGE TEE - Sandlake",
-        "type": "Desserts"
+        "type": "Bubble Tea/Boba"
     },
     {
         "name": "Saigon Snow",
-        "type": "Desserts"
+        "type": "Bubble Tea/Boba"
     },
     {
         "name": "Picasso Moments Bakery, Cafe, & Boba Tea",
-        "type": "Desserts"
+        "type": "Bubble Tea/Boba"
     },
     {
         "name": "The Greenery Creamery",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "Frappe Latino",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "Bora Bora Smoothie Cafe - Orlando",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "The Original Rainbow Cone - Orlando",
-        "type": "Desserts"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "McDonald's",
@@ -413,35 +413,35 @@
     },
     {
         "name": "Taco Bell",
-        "type": "Fast Food"
+        "type": "Mexican/Tex-Mex"
     },
     {
         "name": "Chick-fil-A",
-        "type": "Fast Food"
+        "type": "Chicken Specialty"
     },
     {
         "name": "Popeyes",
-        "type": "Fast Food"
+        "type": "Chicken Specialty"
     },
     {
         "name": "Chipotle",
-        "type": "Fast Food"
+        "type": "Mexican/Tex-Mex"
     },
     {
         "name": "Five Guys",
-        "type": "Fast Food"
+        "type": "Burger Specialty"
     },
     {
         "name": "Panera Bread",
-        "type": "Fast Food"
+        "type": "Breakfast/Brunch"
     },
     {
         "name": "Subway",
-        "type": "Fast Food"
+        "type": "Sandwich Specialty"
     },
     {
         "name": "Domino's Pizza",
-        "type": "Fast Food"
+        "type": "Pizza"
     },
     {
         "name": "Culver's",
@@ -449,23 +449,23 @@
     },
     {
         "name": "Arby's",
-        "type": "Fast Food"
+        "type": "Sandwich Specialty"
     },
     {
         "name": "Jimmy Johns",
-        "type": "Fast Food"
+        "type": "Sandwich Specialty"
     },
     {
         "name": "Jersey Mike's",
-        "type": "Fast Food"
+        "type": "Sandwich Specialty"
     },
     {
         "name": "Little Caesars",
-        "type": "Fast Food"
+        "type": "Pizza"
     },
     {
         "name": "Panda Express",
-        "type": "Fast Food"
+        "type": "Chinese"
     },
     {
         "name": "Sonic Drive-In",
@@ -473,11 +473,11 @@
     },
     {
         "name": "Dairy Queen",
-        "type": "Fast Food"
+        "type": "Ice Cream/Gelato"
     },
     {
         "name": "Wingstop",
-        "type": "Fast Food"
+        "type": "Wings"
     },
     {
         "name": "Cava",
@@ -485,39 +485,39 @@
     },
     {
         "name": "Raising Canes",
-        "type": "Fast Food"
+        "type": "Chicken Specialty"
     },
     {
         "name": "PDQ",
-        "type": "Fast Food"
+        "type": "Chicken Specialty"
     },
     {
         "name": "Steak n Shake",
-        "type": "Fast Food"
+        "type": "Burger Specialty"
     },
     {
         "name": "Shake Shack",
-        "type": "Fast Food"
+        "type": "Burger Specialty"
     },
     {
         "name": "Pizza Hut",
-        "type": "Fast Food"
+        "type": "Pizza"
     },
     {
         "name": "Del Taco",
-        "type": "Fast Food"
+        "type": "Mexican/Tex-Mex"
     },
     {
         "name": "Charley's Philly Steaks",
-        "type": "Fast Food"
+        "type": "Sandwich Specialty"
     },
     {
         "name": "Olive Garden",
-        "type": "Chain Restaurant"
+        "type": "Italian"
     },
     {
         "name": "Red Lobster",
-        "type": "Chain Restaurant"
+        "type": "Seafood"
     },
     {
         "name": "Millers Ale House",
@@ -525,7 +525,7 @@
     },
     {
         "name": "Buffalo Wild Wings",
-        "type": "Chain Restaurant"
+        "type": "Wings"
     },
     {
         "name": "Chili's",
@@ -537,7 +537,7 @@
     },
     {
         "name": "Hooters",
-        "type": "Chain Restaurant"
+        "type": "Wings"
     },
     {
         "name": "Applebee's",
@@ -545,7 +545,7 @@
     },
     {
         "name": "Bubba Gump Shrimp Co.",
-        "type": "Chain Restaurant"
+        "type": "Seafood"
     },
     {
         "name": "Rainforest Cafe",
