@@ -550,5 +550,9 @@
     {
         "name": "Rainforest Cafe",
         "type": "Chain Restaurant"
+    },
+    {
+        "name": "Giordano's",
+        "type": "Pizza"
     }
 ]
