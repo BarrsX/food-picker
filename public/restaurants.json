@@ -29,7 +29,7 @@
     },
     {
         "name": "Chicken fire",
-        "type": "Chicken Specialty"
+        "type": "Chicken"
     },
     {
         "name": "Smoke and doughnuts",
@@ -41,7 +41,7 @@
     },
     {
         "name": "BAD AS'S BURGERS",
-        "type": "Burger Specialty"
+        "type": "Burger"
     },
     {
         "name": "Charlie's Kitchen & Grill",
@@ -53,11 +53,11 @@
     },
     {
         "name": "Alex's gyro and cheesesteaks",
-        "type": "Sandwich Specialty"
+        "type": "Sandwich"
     },
     {
         "name": "Beef N' Buns",
-        "type": "Sandwich Specialty"
+        "type": "Sandwich"
     },
     {
         "name": "Black Bear Kitchen",
@@ -69,15 +69,15 @@
     },
     {
         "name": "Irregular Smash",
-        "type": "Burger Specialty"
+        "type": "Burger"
     },
     {
         "name": "LoveBird Almost Famous Chicken",
-        "type": "Chicken Specialty"
+        "type": "Chicken"
     },
     {
         "name": "Bad As's Sandwich PRIMROSE",
-        "type": "Sandwich Specialty"
+        "type": "Sandwich"
     },
     {
         "name": "The Whiskey",
@@ -85,7 +85,7 @@
     },
     {
         "name": "Kura Sushi",
-        "type": "Japanese"
+        "type": "Sushi"
     },
     {
         "name": "Token Ramen",
@@ -93,7 +93,7 @@
     },
     {
         "name": "Kazu Sushi Burrito",
-        "type": "Japanese"
+        "type": "Sushi"
     },
     {
         "name": "Kyu Ramen",
@@ -113,7 +113,7 @@
     },
     {
         "name": "mosonori | Japanese handroll sushi bar | Winter Park",
-        "type": "Japanese"
+        "type": "Sushi"
     },
     {
         "name": "Palm Beach Meats Orlando",
@@ -129,7 +129,7 @@
     },
     {
         "name": "Izziban Sushi & BBQ",
-        "type": "BBQ/Smokehouse"
+        "type": "Sushi"
     },
     {
         "name": "Star BBQ Korean",
@@ -149,7 +149,7 @@
     },
     {
         "name": "92 chicken",
-        "type": "Chicken Specialty"
+        "type": "Chicken"
     },
     {
         "name": "Snowbean",
@@ -169,7 +169,7 @@
     },
     {
         "name": "bb.q Chicken East Colonial",
-        "type": "Chicken Specialty"
+        "type": "Chicken"
     },
     {
         "name": "Mia's Italian Kitchen",
@@ -417,11 +417,11 @@
     },
     {
         "name": "Chick-fil-A",
-        "type": "Chicken Specialty"
+        "type": "Chicken"
     },
     {
         "name": "Popeyes",
-        "type": "Chicken Specialty"
+        "type": "Chicken"
     },
     {
         "name": "Chipotle",
@@ -429,7 +429,7 @@
     },
     {
         "name": "Five Guys",
-        "type": "Burger Specialty"
+        "type": "Burger"
     },
     {
         "name": "Panera Bread",
@@ -437,7 +437,7 @@
     },
     {
         "name": "Subway",
-        "type": "Sandwich Specialty"
+        "type": "Sandwich"
     },
     {
         "name": "Domino's Pizza",
@@ -449,15 +449,15 @@
     },
     {
         "name": "Arby's",
-        "type": "Sandwich Specialty"
+        "type": "Sandwich"
     },
     {
         "name": "Jimmy Johns",
-        "type": "Sandwich Specialty"
+        "type": "Sandwich"
     },
     {
         "name": "Jersey Mike's",
-        "type": "Sandwich Specialty"
+        "type": "Sandwich"
     },
     {
         "name": "Little Caesars",
@@ -485,19 +485,19 @@
     },
     {
         "name": "Raising Canes",
-        "type": "Chicken Specialty"
+        "type": "Chicken"
     },
     {
         "name": "PDQ",
-        "type": "Chicken Specialty"
+        "type": "Chicken"
     },
     {
         "name": "Steak n Shake",
-        "type": "Burger Specialty"
+        "type": "Burger"
     },
     {
         "name": "Shake Shack",
-        "type": "Burger Specialty"
+        "type": "Burger"
     },
     {
         "name": "Pizza Hut",
@@ -509,7 +509,7 @@
     },
     {
         "name": "Charley's Philly Steaks",
-        "type": "Sandwich Specialty"
+        "type": "Sandwich"
     },
     {
         "name": "Olive Garden",
@@ -554,5 +554,17 @@
     {
         "name": "Giordano's",
         "type": "Pizza"
+    },
+    {
+        "name": "Smashville Hot Chicken & Burgers",
+        "type": "Burger"
+    },
+    {
+        "name": "Buffalo Boss Brooklyn's Finest Wings",
+        "type": "Wings"
+    },
+    {
+        "name": "Kizuna Asian Buffet & Sushi",
+        "type": "Sushi"
     }
 ]
