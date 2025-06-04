@@ -566,5 +566,17 @@
     {
         "name": "Kizuna Asian Buffet & Sushi",
         "type": "Sushi"
+    },
+    {
+        "name": "AJ's Pizza Joint",
+        "type": "Pizza"
+    },
+    {
+        "name": "Shokupan Bakehouse",
+        "type": "Bakery/Café"
+    },
+    {
+        "name": "@ The Diner",
+        "type": "American"
     }
 ]
