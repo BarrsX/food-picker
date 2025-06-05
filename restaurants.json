@@ -578,5 +578,9 @@
     {
         "name": "@ The Diner",
         "type": "American"
+    },
+    {
+        "name": "Fresco Cucina Italiana",
+        "type": "Italian"
     }
 ]
