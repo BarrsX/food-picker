@@ -582,5 +582,13 @@
     {
         "name": "Fresco Cucina Italiana",
         "type": "Italian"
+    },
+    {
+        "name": "Koko Kakigori",
+        "type": "Ice Cream/Gelato"
+    },
+    {
+        "name": "Dee's Quick Fix - Pasta, Wings, & More",
+        "type": "American"
     }
 ]
