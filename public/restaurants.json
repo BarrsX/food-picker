@@ -590,5 +590,25 @@
     {
         "name": "Dee's Quick Fix - Pasta, Wings, & More",
         "type": "American"
+    },
+    {
+        "name": "Slam Dunk Sandwiches",
+        "type": "Sandwich"
+    },
+    {
+        "name": "Gen Korean BBQ House",
+        "type": "Korean"
+    },
+    {
+        "name": "Sweet Clicks",
+        "type": "Desserts"
+    },
+    {
+        "name": "Gelato-go Orlando",
+        "type": "Ice Cream/Gelato"
+    },
+    {
+        "name": "Perkins American Food Co.",
+        "type": "American"
     }
 ]
