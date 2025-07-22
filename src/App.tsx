@@ -38,6 +38,7 @@ export interface Restaurant {
   photos?: string[];
   editorialSummary?: string;
   businessStatus?: string;
+  isOpen?: boolean;
 }
 
 const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string;
@@ -229,9 +230,33 @@ function App() {
 
             placesServiceRef.current.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
               if (detailsStatus === google.maps.places.PlacesServiceStatus.OK && placeDetails) {
-                // Debug: Log the place details to see what we get
-                console.log('Place details received:', placeDetails);
-                console.log('Editorial summary:', (placeDetails as any).editorial_summary);
+                // Try to get editorial summary from different possible fields
+                let editorialSummary = undefined;
+                const details = placeDetails as any;
+                if (details.editorial_summary?.overview) {
+                  editorialSummary = details.editorial_summary.overview;
+                } else if (details.editorial_summary) {
+                  editorialSummary = details.editorial_summary;
+                }
+                
+                // Get current open status
+                let isCurrentlyOpen = undefined;
+                if (placeDetails.opening_hours) {
+                  // Try the recommended isOpen() method first
+                  if (typeof placeDetails.opening_hours.isOpen === 'function') {
+                    try {
+                      isCurrentlyOpen = placeDetails.opening_hours.isOpen();
+                    } catch (e) {
+                      // Silent fallback if isOpen() fails
+                    }
+                  }
+                  
+                  // If isOpen() returns undefined, use open_now as fallback
+                  // Note: open_now is deprecated but more reliable than the isOpen() method
+                  if (isCurrentlyOpen === undefined && (placeDetails.opening_hours as any).open_now !== undefined) {
+                    isCurrentlyOpen = (placeDetails.opening_hours as any).open_now;
+                  }
+                }
                 
                 // Update selected restaurant with place details
                 const enhancedRestaurant: Restaurant = {
@@ -246,10 +271,10 @@ function App() {
                   photos: placeDetails.photos?.slice(0, 3).map(photo => 
                     photo.getUrl({ maxWidth: 400, maxHeight: 300 })
                   ),
-                  editorialSummary: (placeDetails as any).editorial_summary?.overview,
-                  businessStatus: (placeDetails as any).business_status
+                  editorialSummary: editorialSummary,
+                  businessStatus: details.business_status,
+                  isOpen: isCurrentlyOpen
                 };
-                console.log('Enhanced restaurant with editorial summary:', enhancedRestaurant.editorialSummary);
                 setSelectedRestaurant(enhancedRestaurant);
               } else {
                 // Fallback to basic restaurant info if details fail
@@ -557,17 +582,29 @@ function App() {
                     </Box>
                   )}
 
-                  {/* Business Status */}
-                  {selectedRestaurant.businessStatus && selectedRestaurant.businessStatus !== 'OPERATIONAL' && (
-                    <Box sx={{ mb: 1 }}>
+                  {/* Status Chips */}
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                    {/* Current Open Status */}
+                    {selectedRestaurant.isOpen !== undefined && (
                       <Chip 
-                        label={selectedRestaurant.businessStatus === 'CLOSED_TEMPORARILY' ? 'Temporarily Closed' : 'Closed'} 
+                        label={selectedRestaurant.isOpen ? '🟢 Open Now' : '🔴 Closed Now'} 
+                        color={selectedRestaurant.isOpen ? 'success' : 'error'} 
+                        variant="filled"
+                        size="small"
+                        sx={{ fontWeight: 'bold' }}
+                      />
+                    )}
+
+                    {/* Business Status */}
+                    {selectedRestaurant.businessStatus && selectedRestaurant.businessStatus !== 'OPERATIONAL' && (
+                      <Chip 
+                        label={selectedRestaurant.businessStatus === 'CLOSED_TEMPORARILY' ? 'Temporarily Closed' : 'Permanently Closed'} 
                         color="warning" 
                         variant="outlined" 
                         size="small"
                       />
-                    </Box>
-                  )}
+                    )}
+                  </Box>
                   
                   {/* Restaurant Rating */}
                   {selectedRestaurant.rating && (
