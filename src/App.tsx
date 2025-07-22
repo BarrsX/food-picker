@@ -13,7 +13,9 @@ import {
   Divider,
   FormControlLabel,
   FormGroup,
+  IconButton,
   Link,
+  Modal,
   Paper,
   Rating,
   Typography,
@@ -99,6 +101,8 @@ function App() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [isPicking, setIsPicking] = useState(false);
   const [showAdBlockerWarning, setShowAdBlockerWarning] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -152,6 +156,16 @@ function App() {
 
   const deselectAllTypes = useCallback(() => {
     setSelectedTypes([]);
+  }, []);
+
+  const handlePhotoClick = useCallback((photoUrl: string) => {
+    setSelectedPhoto(photoUrl);
+    setPhotoModalOpen(true);
+  }, []);
+
+  const handleClosePhotoModal = useCallback(() => {
+    setPhotoModalOpen(false);
+    setSelectedPhoto(null);
   }, []);
 
   const pickRandom = useCallback(async () => {
@@ -287,8 +301,8 @@ function App() {
                 rating: ratingValue,
                 priceLevel: priceLevelNumber,
                 openingHours: place.regularOpeningHours?.weekdayDescriptions || undefined,
-                photos: place.photos?.slice(0, 3).map(photo => 
-                  photo.getURI({ maxWidth: 400, maxHeight: 300 })
+                photos: place.photos?.slice(0, 10).map(photo => 
+                  photo.getURI({ maxWidth: 800, maxHeight: 600 })
                 ) || undefined,
                 editorialSummary: place.editorialSummary || undefined,
                 businessStatus: place.businessStatus || undefined,
@@ -699,10 +713,16 @@ function App() {
                               width: 120, 
                               height: 80, 
                               borderRadius: 1,
-                              objectFit: 'cover'
+                              objectFit: 'cover',
+                              cursor: 'pointer',
+                              transition: 'transform 0.2s ease-in-out',
+                              '&:hover': {
+                                transform: 'scale(1.05)',
+                              }
                             }}
                             image={photo}
                             alt={`${selectedRestaurant.name} photo ${index + 1}`}
+                            onClick={() => handlePhotoClick(photo)}
                           />
                         ))}
                       </Box>
@@ -757,6 +777,60 @@ function App() {
             </Grid>
           </Grid>
         </Box>
+
+        {/* Photo Modal */}
+        <Modal
+          open={photoModalOpen}
+          onClose={handleClosePhotoModal}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 2,
+          }}
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              maxWidth: '95vw',
+              maxHeight: '95vh',
+              outline: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onClick={handleClosePhotoModal}
+          >
+            {selectedPhoto && (
+              <img
+                src={selectedPhoto}
+                alt="Restaurant enlarged view"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  borderRadius: '12px',
+                  boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)',
+                  transition: 'transform 0.3s ease-in-out',
+                }}
+              />
+            )}
+            <Typography
+              variant="caption"
+              sx={{
+                position: 'absolute',
+                bottom: -30,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                color: 'white',
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                padding: '4px 12px',
+                borderRadius: '16px',
+                fontSize: '0.75rem',
+              }}
+            >
+            </Typography>
+          </Box>
+        </Modal>
       </Container>
     </APIProvider>
   );
