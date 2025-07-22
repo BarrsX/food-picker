@@ -5,13 +5,17 @@ import {
   Alert,
   Box,
   Button,
+  CardMedia,
   Checkbox,
+  Chip,
   CircularProgress,
   Container,
+  Divider,
   FormControlLabel,
   FormGroup,
   Link,
   Paper,
+  Rating,
   Typography,
 } from "@mui/material";
 import { Grid } from "@mui/material";
@@ -23,6 +27,17 @@ export interface Restaurant {
   type: string;
   lat?: number;
   lng?: number;
+  // Google Places details
+  placeId?: string;
+  address?: string;
+  phoneNumber?: string;
+  website?: string;
+  rating?: number;
+  priceLevel?: number;
+  openingHours?: string[];
+  photos?: string[];
+  editorialSummary?: string;
+  businessStatus?: string;
 }
 
 const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string;
@@ -163,7 +178,6 @@ function App() {
 
     const randomIndex = Math.floor(Math.random() * filteredRestaurants.length);
     const selected = filteredRestaurants[randomIndex];
-    setSelectedRestaurant(selected);
 
     if (userLocation && placesServiceRef.current && isLoaded) {
       const request = {
@@ -179,11 +193,72 @@ function App() {
           results[0] &&
           results[0].geometry?.location
         ) {
-          const closestLocation = results[0].geometry.location;
+          const place = results[0];
+          const closestLocation = place.geometry?.location;
+          
+          if (!closestLocation) {
+            console.error("No location found for place");
+            setApiError("Could not find the exact location of the restaurant.");
+            setSelectedRestaurant(selected);
+            setIsPicking(false);
+            return;
+          }
+          
           setMapCenter({
             lat: closestLocation.lat(),
             lng: closestLocation.lng(),
           });
+
+          // Get detailed place information
+          if (place.place_id && placesServiceRef.current) {
+            const detailsRequest = {
+              placeId: place.place_id,
+              fields: [
+                'place_id',
+                'formatted_address',
+                'formatted_phone_number',
+                'website',
+                'rating',
+                'price_level',
+                'opening_hours',
+                'photos',
+                'editorial_summary',
+                'business_status'
+              ]
+            };
+
+            placesServiceRef.current.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
+              if (detailsStatus === google.maps.places.PlacesServiceStatus.OK && placeDetails) {
+                // Debug: Log the place details to see what we get
+                console.log('Place details received:', placeDetails);
+                console.log('Editorial summary:', (placeDetails as any).editorial_summary);
+                
+                // Update selected restaurant with place details
+                const enhancedRestaurant: Restaurant = {
+                  ...selected,
+                  placeId: placeDetails.place_id,
+                  address: placeDetails.formatted_address,
+                  phoneNumber: placeDetails.formatted_phone_number,
+                  website: placeDetails.website,
+                  rating: placeDetails.rating,
+                  priceLevel: placeDetails.price_level,
+                  openingHours: placeDetails.opening_hours?.weekday_text,
+                  photos: placeDetails.photos?.slice(0, 3).map(photo => 
+                    photo.getUrl({ maxWidth: 400, maxHeight: 300 })
+                  ),
+                  editorialSummary: (placeDetails as any).editorial_summary?.overview,
+                  businessStatus: (placeDetails as any).business_status
+                };
+                console.log('Enhanced restaurant with editorial summary:', enhancedRestaurant.editorialSummary);
+                setSelectedRestaurant(enhancedRestaurant);
+              } else {
+                // Fallback to basic restaurant info if details fail
+                setSelectedRestaurant(selected);
+              }
+            });
+          } else {
+            setSelectedRestaurant(selected);
+          }
 
           const distanceService = new google.maps.DistanceMatrixService();
           distanceService.getDistanceMatrix(
@@ -228,6 +303,7 @@ function App() {
           setApiError("Could not find the exact location of the restaurant.");
           setDistance(null);
           setMapCenter(null);
+          setSelectedRestaurant(selected);
           setIsPicking(false);
         }
       });
@@ -471,6 +547,119 @@ function App() {
                   >
                     {selectedRestaurant.type}
                   </Typography>
+                  
+                  {/* Editorial Summary */}
+                  {selectedRestaurant.editorialSummary && (
+                    <Box sx={{ mt: 2, mb: 2, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
+                      <Typography variant="body2" color="text.primary" sx={{ fontStyle: 'italic' }}>
+                        {selectedRestaurant.editorialSummary}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Business Status */}
+                  {selectedRestaurant.businessStatus && selectedRestaurant.businessStatus !== 'OPERATIONAL' && (
+                    <Box sx={{ mb: 1 }}>
+                      <Chip 
+                        label={selectedRestaurant.businessStatus === 'CLOSED_TEMPORARILY' ? 'Temporarily Closed' : 'Closed'} 
+                        color="warning" 
+                        variant="outlined" 
+                        size="small"
+                      />
+                    </Box>
+                  )}
+                  
+                  {/* Restaurant Rating */}
+                  {selectedRestaurant.rating && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
+                      <Rating value={selectedRestaurant.rating} readOnly precision={0.1} />
+                      <Typography variant="body2" sx={{ ml: 1 }}>
+                        {selectedRestaurant.rating}/5
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {/* Price Level */}
+                  {selectedRestaurant.priceLevel && (
+                    <Box sx={{ my: 1 }}>
+                      <Chip 
+                        label={`Price: ${'$'.repeat(selectedRestaurant.priceLevel)}`} 
+                        color="primary" 
+                        variant="outlined" 
+                        size="small"
+                      />
+                    </Box>
+                  )}
+
+                  {/* Address */}
+                  {selectedRestaurant.address && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      <strong>Address:</strong> {selectedRestaurant.address}
+                    </Typography>
+                  )}
+
+                  {/* Phone Number */}
+                  {selectedRestaurant.phoneNumber && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      <strong>Phone:</strong> {selectedRestaurant.phoneNumber}
+                    </Typography>
+                  )}
+
+                  {/* Website */}
+                  {selectedRestaurant.website && (
+                    <Box sx={{ mt: 1 }}>
+                      <Link
+                        href={selectedRestaurant.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="body2"
+                      >
+                        Visit Website
+                      </Link>
+                    </Box>
+                  )}
+
+                  {/* Opening Hours */}
+                  {selectedRestaurant.openingHours && selectedRestaurant.openingHours.length > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Opening Hours:
+                      </Typography>
+                      {selectedRestaurant.openingHours.map((hours, index) => (
+                        <Typography key={index} variant="body2" color="text.secondary">
+                          {hours}
+                        </Typography>
+                      ))}
+                    </Box>
+                  )}
+
+                  {/* Photos */}
+                  {selectedRestaurant.photos && selectedRestaurant.photos.length > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Photos:
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                        {selectedRestaurant.photos.map((photo, index) => (
+                          <CardMedia
+                            key={index}
+                            component="img"
+                            sx={{ 
+                              width: 120, 
+                              height: 80, 
+                              borderRadius: 1,
+                              objectFit: 'cover'
+                            }}
+                            image={photo}
+                            alt={`${selectedRestaurant.name} photo ${index + 1}`}
+                          />
+                        ))}
+                      </Box>
+                    </Box>
+                  )}
+
+                  <Divider sx={{ my: 2 }} />
+
                   {apiError && (
                     <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
                       {apiError}
