@@ -27,7 +27,6 @@ export interface Restaurant {
   type: string;
   lat?: number;
   lng?: number;
-  // Google Places details
   placeId?: string;
   address?: string;
   phoneNumber?: string;
@@ -100,7 +99,6 @@ function App() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [isPicking, setIsPicking] = useState(false);
   const [showAdBlockerWarning, setShowAdBlockerWarning] = useState(false);
-  const placesServiceRef = useRef<google.maps.places.PlacesService>();
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
@@ -109,11 +107,9 @@ function App() {
 
   // Fetch restaurants from JSON
   useEffect(() => {
-    // Use process.env.PUBLIC_URL to ensure the correct path
     fetch(`${process.env.PUBLIC_URL}/restaurants.json`)
       .then((response) => {
         if (!response.ok) {
-          // Include response status text for better debugging
           throw new Error(`Network response was not ok: ${response.statusText}`);
         }
         return response.json();
@@ -158,15 +154,7 @@ function App() {
     setSelectedTypes([]);
   }, []);
 
-  useEffect(() => {
-    if (isLoaded) {
-      placesServiceRef.current = new google.maps.places.PlacesService(
-        document.createElement("div")
-      );
-    }
-  }, [isLoaded]);
-
-  const pickRandom = useCallback(() => {
+  const pickRandom = useCallback(async () => {
     if (filteredRestaurants.length === 0) {
       setApiError("No restaurants match the selected criteria.");
       return;
@@ -180,24 +168,26 @@ function App() {
     const randomIndex = Math.floor(Math.random() * filteredRestaurants.length);
     const selected = filteredRestaurants[randomIndex];
 
-    if (userLocation && placesServiceRef.current && isLoaded) {
-      const request = {
-        query: `${selected.name} near me`,
-        location: userLocation,
-        radius: 50000,
-      };
+    if (userLocation && isLoaded) {
+      try {
+        const { Place } = google.maps.places;
+        
+        const request = {
+          textQuery: selected.name,
+          fields: ['id', 'location', 'displayName'],
+          locationBias: {
+            center: userLocation,
+            radius: 50000,
+          },
+        };
 
-      placesServiceRef.current.textSearch(request, (results, status) => {
-        if (
-          status === google.maps.places.PlacesServiceStatus.OK &&
-          results &&
-          results[0] &&
-          results[0].geometry?.location
-        ) {
-          const place = results[0];
-          const closestLocation = place.geometry?.location;
+        const { places } = await Place.searchByText(request);
+        
+        if (places && places.length > 0) {
+          const place = places[0];
+          const location = place.location;
           
-          if (!closestLocation) {
+          if (!location) {
             console.error("No location found for place");
             setApiError("Could not find the exact location of the restaurant.");
             setSelectedRestaurant(selected);
@@ -206,81 +196,86 @@ function App() {
           }
           
           setMapCenter({
-            lat: closestLocation.lat(),
-            lng: closestLocation.lng(),
+            lat: location.lat(),
+            lng: location.lng(),
           });
 
-          // Get detailed place information
-          if (place.place_id && placesServiceRef.current) {
-            const detailsRequest = {
-              placeId: place.place_id,
-              fields: [
-                'place_id',
-                'formatted_address',
-                'formatted_phone_number',
-                'website',
-                'rating',
-                'price_level',
-                'opening_hours',
-                'photos',
-                'editorial_summary',
-                'business_status'
-              ]
-            };
+          if (place.id) {
+            try {
+              await place.fetchFields({
+                fields: [
+                  'id',
+                  'formattedAddress',
+                  'internationalPhoneNumber',
+                  'websiteURI',
+                  'rating',
+                  'priceLevel',
+                  'regularOpeningHours',
+                  'photos',
+                  'editorialSummary',
+                  'businessStatus'
+                ]
+              });
 
-            placesServiceRef.current.getDetails(detailsRequest, (placeDetails, detailsStatus) => {
-              if (detailsStatus === google.maps.places.PlacesServiceStatus.OK && placeDetails) {
-                // Try to get editorial summary from different possible fields
-                let editorialSummary = undefined;
-                const details = placeDetails as any;
-                if (details.editorial_summary?.overview) {
-                  editorialSummary = details.editorial_summary.overview;
-                } else if (details.editorial_summary) {
-                  editorialSummary = details.editorial_summary;
-                }
-                
-                // Get current open status
-                let isCurrentlyOpen = undefined;
-                if (placeDetails.opening_hours) {
-                  // Try the recommended isOpen() method first
-                  if (typeof placeDetails.opening_hours.isOpen === 'function') {
-                    try {
-                      isCurrentlyOpen = placeDetails.opening_hours.isOpen();
-                    } catch (e) {
-                      // Silent fallback if isOpen() fails
-                    }
-                  }
+              // Get current open status
+              let isCurrentlyOpen = undefined;
+              try {
+                // Manual calculation for open/closed status - new Places API doesn't have direct isOpen() method
+                if (place.regularOpeningHours && place.regularOpeningHours.periods) {
+                  const now = new Date();
+                  const currentDay = now.getDay();
+                  const currentTime = now.getHours() * 100 + now.getMinutes();
                   
-                  // If isOpen() returns undefined, use open_now as fallback
-                  // Note: open_now is deprecated but more reliable than the isOpen() method
-                  if (isCurrentlyOpen === undefined && (placeDetails.opening_hours as any).open_now !== undefined) {
-                    isCurrentlyOpen = (placeDetails.opening_hours as any).open_now;
+                  const todaysPeriods = place.regularOpeningHours.periods.filter(
+                    (period: any) => period.open?.day === currentDay
+                  );
+                  
+                  if (todaysPeriods.length > 0) {
+                    isCurrentlyOpen = todaysPeriods.some((period: any) => {
+                      const openTime = period.open?.time ? parseInt(period.open.time.replace(':', ''), 10) : 0;
+                      const closeTime = period.close?.time ? parseInt(period.close.time.replace(':', ''), 10) : 2400;
+                      
+                      // Handle overnight periods (close time is next day or past midnight)
+                      if (closeTime < openTime) {
+                        return currentTime >= openTime || currentTime < closeTime;
+                      } else {
+                        return currentTime >= openTime && currentTime < closeTime;
+                      }
+                    });
                   }
                 }
-                
-                // Update selected restaurant with place details
-                const enhancedRestaurant: Restaurant = {
-                  ...selected,
-                  placeId: placeDetails.place_id,
-                  address: placeDetails.formatted_address,
-                  phoneNumber: placeDetails.formatted_phone_number,
-                  website: placeDetails.website,
-                  rating: placeDetails.rating,
-                  priceLevel: placeDetails.price_level,
-                  openingHours: placeDetails.opening_hours?.weekday_text,
-                  photos: placeDetails.photos?.slice(0, 3).map(photo => 
-                    photo.getUrl({ maxWidth: 400, maxHeight: 300 })
-                  ),
-                  editorialSummary: editorialSummary,
-                  businessStatus: details.business_status,
-                  isOpen: isCurrentlyOpen
-                };
-                setSelectedRestaurant(enhancedRestaurant);
-              } else {
-                // Fallback to basic restaurant info if details fail
-                setSelectedRestaurant(selected);
+              } catch (e) {
+                console.log('Could not determine open status with new Places API');
               }
-            });
+
+              const priceLevelNumber = place.priceLevel ? Number(place.priceLevel) : undefined;
+
+              let formattedPhoneNumber = place.internationalPhoneNumber || undefined;
+              if (formattedPhoneNumber && formattedPhoneNumber.startsWith('+1 ')) {
+                formattedPhoneNumber = formattedPhoneNumber.substring(3);
+              }
+
+              const enhancedRestaurant: Restaurant = {
+                ...selected,
+                placeId: place.id,
+                address: place.formattedAddress || undefined,
+                phoneNumber: formattedPhoneNumber,
+                website: place.websiteURI || undefined,
+                rating: place.rating || undefined,
+                priceLevel: priceLevelNumber,
+                openingHours: place.regularOpeningHours?.weekdayDescriptions || undefined,
+                photos: place.photos?.slice(0, 3).map(photo => 
+                  photo.getURI({ maxWidth: 400, maxHeight: 300 })
+                ) || undefined,
+                editorialSummary: place.editorialSummary || undefined,
+                businessStatus: place.businessStatus || undefined,
+                isOpen: isCurrentlyOpen
+              };
+              setSelectedRestaurant(enhancedRestaurant);
+            } catch (detailsError) {
+              console.error("Error fetching place details:", detailsError);
+              setSelectedRestaurant(selected);
+            }
           } else {
             setSelectedRestaurant(selected);
           }
@@ -289,7 +284,7 @@ function App() {
           distanceService.getDistanceMatrix(
             {
               origins: [userLocation],
-              destinations: [closestLocation],
+              destinations: [location],
               travelMode: google.maps.TravelMode.DRIVING,
             },
             (response, distStatus) => {
@@ -324,14 +319,21 @@ function App() {
             }
           );
         } else {
-          console.error("Places search failed with status:", status);
+          console.error("No places found for the search");
           setApiError("Could not find the exact location of the restaurant.");
           setDistance(null);
           setMapCenter(null);
           setSelectedRestaurant(selected);
           setIsPicking(false);
         }
-      });
+      } catch (error) {
+        console.error("Place search failed:", error);
+        setApiError("Could not find the exact location of the restaurant.");
+        setDistance(null);
+        setMapCenter(null);
+        setSelectedRestaurant(selected);
+        setIsPicking(false);
+      }
     } else {
       if (!userLocation) {
         setApiError("User location not available to find nearby restaurant.");
@@ -573,7 +575,6 @@ function App() {
                     {selectedRestaurant.type}
                   </Typography>
                   
-                  {/* Editorial Summary */}
                   {selectedRestaurant.editorialSummary && (
                     <Box sx={{ mt: 2, mb: 2, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
                       <Typography variant="body2" color="text.primary" sx={{ fontStyle: 'italic' }}>
@@ -582,9 +583,7 @@ function App() {
                     </Box>
                   )}
 
-                  {/* Status Chips */}
                   <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                    {/* Current Open Status */}
                     {selectedRestaurant.isOpen !== undefined && (
                       <Chip 
                         label={selectedRestaurant.isOpen ? '🟢 Open Now' : '🔴 Closed Now'} 
@@ -595,7 +594,6 @@ function App() {
                       />
                     )}
 
-                    {/* Business Status */}
                     {selectedRestaurant.businessStatus && selectedRestaurant.businessStatus !== 'OPERATIONAL' && (
                       <Chip 
                         label={selectedRestaurant.businessStatus === 'CLOSED_TEMPORARILY' ? 'Temporarily Closed' : 'Permanently Closed'} 
@@ -606,7 +604,6 @@ function App() {
                     )}
                   </Box>
                   
-                  {/* Restaurant Rating */}
                   {selectedRestaurant.rating && (
                     <Box sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
                       <Rating value={selectedRestaurant.rating} readOnly precision={0.1} />
@@ -616,7 +613,6 @@ function App() {
                     </Box>
                   )}
 
-                  {/* Price Level */}
                   {selectedRestaurant.priceLevel && (
                     <Box sx={{ my: 1 }}>
                       <Chip 
@@ -628,21 +624,18 @@ function App() {
                     </Box>
                   )}
 
-                  {/* Address */}
                   {selectedRestaurant.address && (
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                       <strong>Address:</strong> {selectedRestaurant.address}
                     </Typography>
                   )}
 
-                  {/* Phone Number */}
                   {selectedRestaurant.phoneNumber && (
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                       <strong>Phone:</strong> {selectedRestaurant.phoneNumber}
                     </Typography>
                   )}
 
-                  {/* Website */}
                   {selectedRestaurant.website && (
                     <Box sx={{ mt: 1 }}>
                       <Link
@@ -656,7 +649,6 @@ function App() {
                     </Box>
                   )}
 
-                  {/* Opening Hours */}
                   {selectedRestaurant.openingHours && selectedRestaurant.openingHours.length > 0 && (
                     <Box sx={{ mt: 2 }}>
                       <Typography variant="subtitle2" gutterBottom>
@@ -670,7 +662,6 @@ function App() {
                     </Box>
                   )}
 
-                  {/* Photos */}
                   {selectedRestaurant.photos && selectedRestaurant.photos.length > 0 && (
                     <Box sx={{ mt: 2 }}>
                       <Typography variant="subtitle2" gutterBottom>
