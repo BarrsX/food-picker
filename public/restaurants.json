@@ -610,5 +610,17 @@
     {
         "name": "Perkins American Food Co.",
         "type": "American"
+    },
+    {
+        "name": "Tsuri Japanese Street Food",
+        "type": "Japanese"
+    },
+    {
+        "name": "Kingston 5 - Jamaican Fusion Kitchen",
+        "type": "International"
+    },
+    {
+        "name": "Sister Honey's",
+        "type": "Bakery/Café"
     }
 ]
