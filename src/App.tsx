@@ -248,7 +248,30 @@ function App() {
                 console.log('Could not determine open status with new Places API');
               }
 
-              const priceLevelNumber = place.priceLevel ? Number(place.priceLevel) : undefined;
+              let priceLevelNumber = undefined;
+              if (place.priceLevel) {
+                switch (place.priceLevel) {
+                  case 'INEXPENSIVE':
+                    priceLevelNumber = 1;
+                    break;
+                  case 'MODERATE':
+                    priceLevelNumber = 2;
+                    break;
+                  case 'EXPENSIVE':
+                    priceLevelNumber = 3;
+                    break;
+                  case 'VERY_EXPENSIVE':
+                    priceLevelNumber = 4;
+                    break;
+                    default:
+                    if (!isNaN(Number(place.priceLevel))) {
+                      priceLevelNumber = Number(place.priceLevel);
+                    }
+                    break;
+                }
+              }
+              
+              const ratingValue = place.rating && !isNaN(Number(place.rating)) ? Number(place.rating) : undefined;
 
               let formattedPhoneNumber = place.internationalPhoneNumber || undefined;
               if (formattedPhoneNumber && formattedPhoneNumber.startsWith('+1 ')) {
@@ -261,7 +284,7 @@ function App() {
                 address: place.formattedAddress || undefined,
                 phoneNumber: formattedPhoneNumber,
                 website: place.websiteURI || undefined,
-                rating: place.rating || undefined,
+                rating: ratingValue,
                 priceLevel: priceLevelNumber,
                 openingHours: place.regularOpeningHours?.weekdayDescriptions || undefined,
                 photos: place.photos?.slice(0, 3).map(photo => 
@@ -608,7 +631,7 @@ function App() {
                     <Box sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
                       <Rating value={selectedRestaurant.rating} readOnly precision={0.1} />
                       <Typography variant="body2" sx={{ ml: 1 }}>
-                        {selectedRestaurant.rating}/5
+                        {selectedRestaurant.rating.toFixed(1)}/5
                       </Typography>
                     </Box>
                   )}
