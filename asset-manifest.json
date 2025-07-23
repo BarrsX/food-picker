@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/food-picker/static/js/main.84e5f24b.js",
+    "main.js": "/food-picker/static/js/main.a74ab84a.js",
     "static/js/453.8d4c44f8.chunk.js": "/food-picker/static/js/453.8d4c44f8.chunk.js",
     "static/media/logo.png": "/food-picker/static/media/logo.82fe007d4fbc530425cf.png",
     "index.html": "/food-picker/index.html",
-    "main.84e5f24b.js.map": "/food-picker/static/js/main.84e5f24b.js.map",
+    "main.a74ab84a.js.map": "/food-picker/static/js/main.a74ab84a.js.map",
     "453.8d4c44f8.chunk.js.map": "/food-picker/static/js/453.8d4c44f8.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.84e5f24b.js"
+    "static/js/main.a74ab84a.js"
   ]
 }
