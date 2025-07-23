@@ -6,14 +6,10 @@ import {
   Box,
   Button,
   CardMedia,
-  Checkbox,
   Chip,
   CircularProgress,
   Container,
   Divider,
-  FormControlLabel,
-  FormGroup,
-  IconButton,
   Link,
   Modal,
   Paper,
@@ -547,23 +543,34 @@ function App() {
                     Deselect All
                   </Button>
                 </Box>
-                <FormGroup
-                  sx={{ maxHeight: "400px", overflowY: "auto", pr: 1 }}
+                <Box
+                  sx={{ 
+                    maxHeight: "400px", 
+                    overflowY: "auto", 
+                    pr: 1,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 1
+                  }}
                 >
                   {types.map((type) => (
-                    <FormControlLabel
+                    <Chip
                       key={type}
-                      control={
-                        <Checkbox
-                          checked={selectedTypes.includes(type)}
-                          onChange={() => handleTypeChange(type)}
-                          disabled={restaurantsLoading}
-                        />
-                      }
                       label={type}
+                      clickable
+                      color={selectedTypes.includes(type) ? "primary" : "default"}
+                      variant={selectedTypes.includes(type) ? "filled" : "outlined"}
+                      onClick={() => handleTypeChange(type)}
+                      disabled={restaurantsLoading}
+                      sx={{
+                        transition: "all 0.2s ease-in-out",
+                        "&:hover": {
+                          transform: "scale(1.05)",
+                        }
+                      }}
                     />
                   ))}
-                </FormGroup>
+                </Box>
               </Paper>
               <Button
                 variant="contained"
