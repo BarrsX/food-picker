@@ -125,6 +125,8 @@ function App() {
       });
   }, []);
 
+  console.log("Selected Restaurant:", selectedRestaurant);
+
   const types = useMemo(
     () => Array.from(new Set(restaurants.map((r) => r.type))).sort(),
     [restaurants]
@@ -230,28 +232,49 @@ function App() {
               // Get current open status
               let isCurrentlyOpen = undefined;
               try {
-                // Manual calculation for open/closed status - new Places API doesn't have direct isOpen() method
-                if (place.regularOpeningHours && place.regularOpeningHours.periods) {
-                  const now = new Date();
-                  const currentDay = now.getDay();
-                  const currentTime = now.getHours() * 100 + now.getMinutes();
+                const now = new Date();
+                const currentDay = now.getDay();
+                const currentTime = now.getHours() * 100 + now.getMinutes();
+                
+                // First check if we have opening hours text data
+                if (place.regularOpeningHours && place.regularOpeningHours.weekdayDescriptions) {
+                  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                  const todayName = dayNames[currentDay];
                   
-                  const todaysPeriods = place.regularOpeningHours.periods.filter(
-                    (period: any) => period.open?.day === currentDay
+                  // Find today's hours description
+                  const todayHours = place.regularOpeningHours.weekdayDescriptions.find(
+                    (desc: string) => desc.startsWith(todayName)
                   );
                   
-                  if (todaysPeriods.length > 0) {
-                    isCurrentlyOpen = todaysPeriods.some((period: any) => {
-                      const openTime = period.open?.time ? parseInt(period.open.time.replace(':', ''), 10) : 0;
-                      const closeTime = period.close?.time ? parseInt(period.close.time.replace(':', ''), 10) : 2400;
-                      
-                      // Handle overnight periods (close time is next day or past midnight)
-                      if (closeTime < openTime) {
-                        return currentTime >= openTime || currentTime < closeTime;
-                      } else {
-                        return currentTime >= openTime && currentTime < closeTime;
+                  if (todayHours) {
+                    // If today shows "Closed", definitely closed
+                    if (todayHours.toLowerCase().includes('closed')) {
+                      isCurrentlyOpen = false;
+                    } else {
+                      // Try to determine from periods if available
+                      if (place.regularOpeningHours.periods) {
+                        const todaysPeriods = place.regularOpeningHours.periods.filter(
+                          (period: any) => period.open?.day === currentDay
+                        );
+                        
+                        if (todaysPeriods.length > 0) {
+                          isCurrentlyOpen = todaysPeriods.some((period: any) => {
+                            const openTime = period.open?.time ? parseInt(period.open.time.replace(':', ''), 10) : 0;
+                            const closeTime = period.close?.time ? parseInt(period.close.time.replace(':', ''), 10) : 2400;
+                            
+                            // Handle overnight periods (close time is next day or past midnight)
+                            if (closeTime < openTime) {
+                              return currentTime >= openTime || currentTime < closeTime;
+                            } else {
+                              return currentTime >= openTime && currentTime < closeTime;
+                            }
+                          });
+                        } else {
+                          // No periods for today means closed
+                          isCurrentlyOpen = false;
+                        }
                       }
-                    });
+                    }
                   }
                 }
               } catch (e) {
