@@ -1,173 +1,54 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
-import { useLoadScript } from "@react-google-maps/api";
-import { Map, AdvancedMarker, APIProvider } from "@vis.gl/react-google-maps";
-import {
-  Alert,
-  Box,
-  Button,
-  CardMedia,
-  Chip,
-  CircularProgress,
-  Container,
-  Divider,
-  Link,
-  Modal,
-  Paper,
-  Rating,
-  Typography,
-} from "@mui/material";
-import { Grid } from "@mui/material";
-
+import React, { useCallback, useEffect, useState } from "react";
+import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import { Alert, Box, Button, CircularProgress, Container, Grid, Typography } from "@mui/material";
 import logo from "./logo.png";
+import type { Restaurant } from "./types/restaurant";
+import FiltersPanel from "./components/FiltersPanel";
+import RestaurantDetails from "./components/RestaurantDetails";
+import PhotoModal from "./components/PhotoModal";
+import restaurantsData from "./data/restaurants";
+import { useRestaurants } from "./hooks/useRestaurants";
+import { normalizePhone, priceLevelToNumber } from "./utils/places";
 
-export interface Restaurant {
-  name: string;
-  type: string;
-  lat?: number;
-  lng?: number;
-  placeId?: string;
-  address?: string;
-  phoneNumber?: string;
-  website?: string;
-  rating?: number;
-  priceLevel?: number;
-  openingHours?: string[];
-  photos?: string[];
-  editorialSummary?: string;
-  businessStatus?: string;
-  isOpen?: boolean;
-}
-
-const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string;
 const GOOGLE_MAP_ID = process.env.REACT_APP_GOOGLE_MAP_ID as string;
-const libraries: "places"[] = ["places"];
-
-interface RestaurantMapProps {
-  mapCenter: google.maps.LatLngLiteral;
-}
-
-const RestaurantMap: React.FC<RestaurantMapProps> = React.memo(
-  ({ mapCenter }) => {
-    const mapRef = useRef<google.maps.Map>();
-
-    useEffect(() => {
-      if (mapRef.current) {
-        mapRef.current.panTo(mapCenter);
-      }
-    }, [mapCenter]);
-
-    return (
-      <Box sx={{ height: 300, width: "100%", mt: 2 }} className="map-container">
-        <Map
-          mapId={GOOGLE_MAP_ID}
-          zoom={15}
-          defaultCenter={mapCenter}
-          gestureHandling={"greedy"}
-          style={{ width: "100%", height: "100%" }}
-          onIdle={(map) => {
-            if (!mapRef.current) {
-              mapRef.current = map.map;
-            }
-          }}
-        >
-          <AdvancedMarker position={mapCenter} />
-        </Map>
-      </Box>
-    );
-  },
-  (prevProps, nextProps) =>
-    prevProps.mapCenter.lat === nextProps.mapCenter.lat &&
-    prevProps.mapCenter.lng === nextProps.mapCenter.lng
-);
 
 function App() {
-  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [restaurantsLoading, setRestaurantsLoading] = useState(true);
-  const [restaurantsError, setRestaurantsError] = useState<string | null>(null);
-  const [selectedRestaurant, setSelectedRestaurant] =
-    useState<Restaurant | null>(null);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [userLocation, setUserLocation] =
-    useState<google.maps.LatLngLiteral | null>(null);
+  // Static, typed restaurants list
+  const initialRestaurants = restaurantsData;
+  const { types, filtered, selectedTypes, setSelectedTypes } = useRestaurants(initialRestaurants);
+
+  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [userLocation, setUserLocation] = useState<google.maps.LatLngLiteral | null>(null);
   const [geolocationError, setGeolocationError] = useState<string | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
-  const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral | null>(
-    null
-  );
+  const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isPicking, setIsPicking] = useState(false);
-  const [showAdBlockerWarning, setShowAdBlockerWarning] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
 
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
-    libraries,
-  });
-
-  // Fetch restaurants from JSON
-  useEffect(() => {
-    fetch(`${process.env.PUBLIC_URL}/restaurants.json`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then((data: Restaurant[]) => {
-        setRestaurants(data);
-        setRestaurantsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching restaurants:", error);
-        setRestaurantsError("Failed to load restaurant list.");
-        setRestaurantsLoading(false);
-      });
-  }, []);
-
-  console.log("Selected Restaurant:", selectedRestaurant);
-
-  const types = useMemo(
-    () => Array.from(new Set(restaurants.map((r) => r.type))).sort(),
-    [restaurants]
-  );
-
-  const filteredRestaurants = useMemo(
-    () =>
-      selectedTypes.length === 0
-        ? restaurants
-        : restaurants.filter((r) => selectedTypes.includes(r.type)),
-    [selectedTypes, restaurants]
-  );
+  // Load Places library via @vis.gl/react-google-maps
+  const placesLib = useMapsLibrary("places");
+  const placesReady = Boolean(placesLib);
 
   const handleTypeChange = useCallback((type: string) => {
-    setSelectedTypes((prevTypes) =>
-      prevTypes.includes(type)
-        ? prevTypes.filter((t) => t !== type)
-        : [...prevTypes, type]
-    );
-  }, []);
+    setSelectedTypes((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]));
+  }, [setSelectedTypes]);
 
-  const selectAllTypes = useCallback(() => {
-    setSelectedTypes(types);
-  }, [types]);
-
-  const deselectAllTypes = useCallback(() => {
-    setSelectedTypes([]);
-  }, []);
+  const selectAllTypes = useCallback(() => setSelectedTypes(types), [types, setSelectedTypes]);
+  const deselectAllTypes = useCallback(() => setSelectedTypes([]), [setSelectedTypes]);
 
   const handlePhotoClick = useCallback((photoUrl: string) => {
     setSelectedPhoto(photoUrl);
     setPhotoModalOpen(true);
   }, []);
-
   const handleClosePhotoModal = useCallback(() => {
     setPhotoModalOpen(false);
     setSelectedPhoto(null);
   }, []);
 
   const pickRandom = useCallback(async () => {
-    if (filteredRestaurants.length === 0) {
+    if (filtered.length === 0) {
       setApiError("No restaurants match the selected criteria.");
       return;
     }
@@ -177,213 +58,140 @@ function App() {
     setDistance(null);
     setMapCenter(null);
 
-    const randomIndex = Math.floor(Math.random() * filteredRestaurants.length);
-    const selected = filteredRestaurants[randomIndex];
+    const randomIndex = Math.floor(Math.random() * filtered.length);
+    const selected = filtered[randomIndex];
 
-    if (userLocation && isLoaded) {
+    if (userLocation && placesReady) {
       try {
-        const { Place } = google.maps.places;
-        
-        const request = {
-          textQuery: selected.name,
-          fields: ['id', 'location', 'displayName'],
-          locationBias: {
-            center: userLocation,
-            radius: 50000,
-          },
+        // Use stable PlacesService API
+        const dummyMapDiv = document.createElement("div");
+        const service = new google.maps.places.PlacesService(dummyMapDiv);
+
+        const textSearchReq: google.maps.places.TextSearchRequest = {
+          query: selected.name,
+          location: new google.maps.LatLng(userLocation.lat, userLocation.lng),
+          radius: 50000,
         };
 
-        const { places } = await Place.searchByText(request);
-        
-        if (places && places.length > 0) {
-          const place = places[0];
-          const location = place.location;
-          
-          if (!location) {
-            console.error("No location found for place");
+        service.textSearch(textSearchReq, (results, status) => {
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !results || results.length === 0) {
             setApiError("Could not find the exact location of the restaurant.");
             setSelectedRestaurant(selected);
             setIsPicking(false);
             return;
           }
-          
-          setMapCenter({
-            lat: location.lat(),
-            lng: location.lng(),
-          });
 
-          if (place.id) {
-            try {
-              await place.fetchFields({
-                fields: [
-                  'id',
-                  'formattedAddress',
-                  'internationalPhoneNumber',
-                  'websiteURI',
-                  'rating',
-                  'priceLevel',
-                  'regularOpeningHours',
-                  'photos',
-                  'editorialSummary',
-                  'businessStatus'
-                ]
-              });
-
-              // Get current open status
-              let isCurrentlyOpen = undefined;
-              try {
-                const now = new Date();
-                const currentDay = now.getDay();
-                const currentTime = now.getHours() * 100 + now.getMinutes();
-                
-                // First check if we have opening hours text data
-                if (place.regularOpeningHours && place.regularOpeningHours.weekdayDescriptions) {
-                  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                  const todayName = dayNames[currentDay];
-                  
-                  // Find today's hours description
-                  const todayHours = place.regularOpeningHours.weekdayDescriptions.find(
-                    (desc: string) => desc.startsWith(todayName)
-                  );
-                  
-                  if (todayHours) {
-                    // If today shows "Closed", definitely closed
-                    if (todayHours.toLowerCase().includes('closed')) {
-                      isCurrentlyOpen = false;
-                    } else {
-                      // Try to determine from periods if available
-                      if (place.regularOpeningHours.periods) {
-                        const todaysPeriods = place.regularOpeningHours.periods.filter(
-                          (period: any) => period.open?.day === currentDay
-                        );
-                        
-                        if (todaysPeriods.length > 0) {
-                          isCurrentlyOpen = todaysPeriods.some((period: any) => {
-                            const openTime = period.open?.time ? parseInt(period.open.time.replace(':', ''), 10) : 0;
-                            const closeTime = period.close?.time ? parseInt(period.close.time.replace(':', ''), 10) : 2400;
-                            
-                            // Handle overnight periods (close time is next day or past midnight)
-                            if (closeTime < openTime) {
-                              return currentTime >= openTime || currentTime < closeTime;
-                            } else {
-                              return currentTime >= openTime && currentTime < closeTime;
-                            }
-                          });
-                        } else {
-                          // No periods for today means closed
-                          isCurrentlyOpen = false;
-                        }
-                      }
-                    }
-                  }
-                }
-              } catch (e) {
-                console.log('Could not determine open status with new Places API');
-              }
-
-              let priceLevelNumber = undefined;
-              if (place.priceLevel) {
-                switch (place.priceLevel) {
-                  case 'INEXPENSIVE':
-                    priceLevelNumber = 1;
-                    break;
-                  case 'MODERATE':
-                    priceLevelNumber = 2;
-                    break;
-                  case 'EXPENSIVE':
-                    priceLevelNumber = 3;
-                    break;
-                  case 'VERY_EXPENSIVE':
-                    priceLevelNumber = 4;
-                    break;
-                    default:
-                    if (!isNaN(Number(place.priceLevel))) {
-                      priceLevelNumber = Number(place.priceLevel);
-                    }
-                    break;
-                }
-              }
-              
-              const ratingValue = place.rating && !isNaN(Number(place.rating)) ? Number(place.rating) : undefined;
-
-              let formattedPhoneNumber = place.internationalPhoneNumber || undefined;
-              if (formattedPhoneNumber && formattedPhoneNumber.startsWith('+1 ')) {
-                formattedPhoneNumber = formattedPhoneNumber.substring(3);
-              }
-
-              const enhancedRestaurant: Restaurant = {
-                ...selected,
-                placeId: place.id,
-                address: place.formattedAddress || undefined,
-                phoneNumber: formattedPhoneNumber,
-                website: place.websiteURI || undefined,
-                rating: ratingValue,
-                priceLevel: priceLevelNumber,
-                openingHours: place.regularOpeningHours?.weekdayDescriptions || undefined,
-                photos: place.photos?.slice(0, 10).map(photo => 
-                  photo.getURI({ maxWidth: 800, maxHeight: 600 })
-                ) || undefined,
-                editorialSummary: place.editorialSummary || undefined,
-                businessStatus: place.businessStatus || undefined,
-                isOpen: isCurrentlyOpen
-              };
-              setSelectedRestaurant(enhancedRestaurant);
-            } catch (detailsError) {
-              console.error("Error fetching place details:", detailsError);
-              setSelectedRestaurant(selected);
-            }
-          } else {
+          const placeResult = results[0];
+          const loc = placeResult.geometry?.location;
+          if (!loc) {
+            setApiError("Could not find the exact location of the restaurant.");
             setSelectedRestaurant(selected);
+            setIsPicking(false);
+            return;
           }
 
-          const distanceService = new google.maps.DistanceMatrixService();
-          distanceService.getDistanceMatrix(
-            {
-              origins: [userLocation],
-              destinations: [location],
-              travelMode: google.maps.TravelMode.DRIVING,
-            },
-            (response, distStatus) => {
-              if (distStatus === google.maps.DistanceMatrixStatus.OK && response) {
+          const newCenter = { lat: loc.lat(), lng: loc.lng() };
+          setMapCenter(newCenter);
+
+          if (placeResult.place_id) {
+            const detailReq: google.maps.places.PlaceDetailsRequest = {
+              placeId: placeResult.place_id,
+              fields: [
+                "place_id",
+                "formatted_address",
+                "international_phone_number",
+                "website",
+                "rating",
+                "price_level",
+                "opening_hours",
+                "photos",
+                "editorial_summary",
+                "business_status",
+              ],
+            };
+            service.getDetails(detailReq, (details, dStatus) => {
+              if (dStatus === google.maps.places.PlacesServiceStatus.OK && details) {
+                // Determine open status
+                let isCurrentlyOpen: boolean | undefined = undefined;
                 try {
-                  const element = response.rows[0].elements[0];
-                  if (element.status === "OK") {
-                    const distanceInMeters = element.distance.value;
-                    const distanceInMiles = (distanceInMeters / 1609.344).toFixed(
-                      2
-                    );
-                    const durationText = element.duration.text;
-                    setDistance(
-                      `${distanceInMiles} miles (${durationText} driving)`
-                    );
+                  const now = new Date();
+                  const currentDay = now.getDay();
+                  const currentTime = now.getHours() * 100 + now.getMinutes();
+                  const periods = details.opening_hours?.periods as any[] | undefined;
+                  if (periods && periods.length > 0) {
+                    const todays = periods.filter((p: any) => p.open?.day === currentDay);
+                    if (todays.length > 0) {
+                      isCurrentlyOpen = todays.some((p: any) => {
+                        const openTime = p.open?.time ? parseInt(String(p.open.time).replace(":", ""), 10) : 0;
+                        const closeTime = p.close?.time ? parseInt(String(p.close.time).replace(":", ""), 10) : 2400;
+                        return closeTime < openTime
+                          ? currentTime >= openTime || currentTime < closeTime
+                          : currentTime >= openTime && currentTime < closeTime;
+                      });
+                    }
+                  }
+                } catch {}
+
+                const enhanced: Restaurant = {
+                  ...selected,
+                  placeId: details.place_id || undefined,
+                  address: details.formatted_address || undefined,
+                  phoneNumber: normalizePhone(details.international_phone_number || undefined),
+                  website: details.website || undefined,
+                  rating: details.rating !== undefined ? Number(details.rating) : undefined,
+                  priceLevel: priceLevelToNumber(details.price_level as any),
+                  openingHours: details.opening_hours?.weekday_text || undefined,
+                  photos:
+                    details.photos?.slice(0, 10).map((p) => p.getUrl({ maxWidth: 800, maxHeight: 600 })) ||
+                    undefined,
+                  editorialSummary: (details as any).editorial_summary?.overview || undefined,
+                  businessStatus: details.business_status as any,
+                  isOpen: isCurrentlyOpen,
+                };
+                setSelectedRestaurant(enhanced);
+              } else {
+                setSelectedRestaurant(selected);
+              }
+
+              // Distance calculation
+              const distanceService = new google.maps.DistanceMatrixService();
+              distanceService.getDistanceMatrix(
+                {
+                  origins: [userLocation],
+                  destinations: [newCenter],
+                  travelMode: google.maps.TravelMode.DRIVING,
+                },
+                (response, distStatus) => {
+                  if (distStatus === google.maps.DistanceMatrixStatus.OK && response) {
+                    try {
+                      const element = response.rows[0].elements[0];
+                      if (element.status === "OK") {
+                        const meters = element.distance.value;
+                        const miles = (meters / 1609.344).toFixed(2);
+                        const durationText = element.duration.text;
+                        setDistance(`${miles} miles (${durationText} driving)`);
+                      } else {
+                        setApiError("Could not calculate distance.");
+                        setDistance(null);
+                      }
+                    } catch {
+                      setApiError("Error processing distance information.");
+                      setDistance(null);
+                    }
                   } else {
-                    console.error("Distance Matrix element status:", element.status);
-                    setApiError("Could not calculate distance.");
+                    setApiError("Failed to get distance information.");
                     setDistance(null);
                   }
-                } catch (e) {
-                  console.error("Error processing distance response:", e);
-                  setApiError("Error processing distance information.");
-                  setDistance(null);
+                  setIsPicking(false);
                 }
-              } else {
-                console.error("Distance Matrix request failed with status:", distStatus);
-                setApiError("Failed to get distance information.");
-                setDistance(null);
-              }
-              setIsPicking(false);
-            }
-          );
-        } else {
-          console.error("No places found for the search");
-          setApiError("Could not find the exact location of the restaurant.");
-          setDistance(null);
-          setMapCenter(null);
-          setSelectedRestaurant(selected);
-          setIsPicking(false);
-        }
-      } catch (error) {
-        console.error("Place search failed:", error);
+              );
+            });
+          } else {
+            setSelectedRestaurant(selected);
+            setIsPicking(false);
+          }
+        });
+      } catch {
         setApiError("Could not find the exact location of the restaurant.");
         setDistance(null);
         setMapCenter(null);
@@ -391,33 +199,26 @@ function App() {
         setIsPicking(false);
       }
     } else {
-      if (!userLocation) {
-        setApiError("User location not available to find nearby restaurant.");
-      } else if (!isLoaded) {
-        setApiError("Map services not loaded yet.");
-      }
+      if (!userLocation) setApiError("User location not available to find nearby restaurant.");
+      // Do not set a maps-not-loaded error; button is disabled until ready.
       setSelectedRestaurant(selected);
       setIsPicking(false);
     }
-  }, [filteredRestaurants, userLocation, isLoaded]);
+  }, [filtered, userLocation, placesReady]);
 
   useEffect(() => {
     setGeolocationError(null);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
+          setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
           setGeolocationError(null);
         },
         (error) => {
           let message = "Error: The Geolocation service failed.";
           switch (error.code) {
             case error.PERMISSION_DENIED:
-              message =
-                "Geolocation permission denied. Location features disabled.";
+              message = "Geolocation permission denied. Location features disabled.";
               break;
             case error.POSITION_UNAVAILABLE:
               message = "Location information is unavailable.";
@@ -429,440 +230,88 @@ function App() {
               message = "An unknown error occurred while getting location.";
               break;
           }
-          console.error(message, error);
           setGeolocationError(message);
           setUserLocation(null);
         }
       );
     } else {
       const message = "Error: Your browser doesn't support geolocation.";
-      console.error(message);
       setGeolocationError(message);
       setUserLocation(null);
     }
   }, []);
 
-  useEffect(() => {
-    const testAdBlocker = async () => {
-      try {
-        await fetch(
-          "https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true"
-        );
-      } catch (error) {
-        setShowAdBlockerWarning(true);
-      }
-    };
-    testAdBlocker();
-  }, []);
-
-  if (loadError) {
-    return (
-      <Container>
-        <Alert severity="error">
-          Error loading Google Maps scripts. Please check your network
-          connection and API key configuration.
-        </Alert>
-      </Container>
-    );
-  }
-
-  if (!isLoaded || restaurantsLoading) {
-    return (
-      <Container
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-        <Typography sx={{ ml: 2 }}>Loading...</Typography>
-      </Container>
-    );
-  }
-
-  if (restaurantsError) {
-    return (
-      <Container>
-        <Alert severity="error">{restaurantsError}</Alert>
-      </Container>
-    );
-  }
+  const leftDisabled = isPicking || filtered.length === 0;
 
   return (
-    <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
-      <Container maxWidth="lg">
-        {showAdBlockerWarning && (
-          <Alert severity="warning" sx={{ mb: 2 }}>
-            It looks like you might be using an ad blocker. Some features of
-            the map may not work correctly. Consider disabling it for this site
-            for the best experience.
-          </Alert>
-        )}
-        {geolocationError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {geolocationError}
-          </Alert>
-        )}
-        <Box
-          sx={{
-            my: 4,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-start",
-          }}
-        >
-          <img
-            src={logo}
-            alt="Logo"
-            style={{
-              width: "60px",
-              height: "60px",
-              marginRight: "20px",
-            }}
-          />
-          <Typography
-            variant="h4"
-            component="h1"
-            sx={{
-              marginBottom: 0,
-              display: "flex",
-              alignItems: "center",
-              height: "60px",
-            }}
-          >
-            Orlando Random Restaurant Picker
-          </Typography>
-        </Box>
-        <Box sx={{ my: 4 }}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
-              <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Select Food Types:
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 2,
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={selectAllTypes}
-                    disabled={restaurantsLoading}
-                  >
-                    Select All
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={deselectAllTypes}
-                    disabled={restaurantsLoading}
-                  >
-                    Deselect All
-                  </Button>
-                </Box>
-                <Box
-                  sx={{ 
-                    maxHeight: "400px", 
-                    overflowY: "auto", 
-                    pr: 1,
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 1
-                  }}
-                >
-                  {types.map((type) => (
-                    <Chip
-                      key={type}
-                      label={type}
-                      clickable
-                      color={selectedTypes.includes(type) ? "primary" : "default"}
-                      variant={selectedTypes.includes(type) ? "filled" : "outlined"}
-                      onClick={() => handleTypeChange(type)}
-                      disabled={restaurantsLoading}
-                      sx={{
-                        transition: "all 0.2s ease-in-out",
-                        "&:hover": {
-                          transform: "scale(1.05)",
-                        }
-                      }}
-                    />
-                  ))}
-                </Box>
-              </Paper>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={pickRandom}
-                fullWidth
-                size="large"
-                sx={{ py: 2, fontSize: "1.2rem" }}
-                disabled={
-                  isPicking ||
-                  restaurantsLoading ||
-                  filteredRestaurants.length === 0
-                }
-              >
-                {isPicking ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  "Pick a Random Restaurant"
-                )}
-              </Button>
-              {filteredRestaurants.length === 0 && !restaurantsLoading && (
-                <Typography
-                  color="text.secondary"
-                  variant="caption"
-                  display="block"
-                  sx={{ mt: 1, textAlign: "center" }}
-                >
-                  Select at least one type or clear filters to pick.
-                </Typography>
-              )}
-            </Grid>
-            <Grid item xs={12} md={8}>
-              {selectedRestaurant ? (
-                <Paper elevation={3} sx={{ p: 3, height: "100%" }}>
-                  <Typography variant="h5" gutterBottom color="text.primary">
-                    Selected Restaurant:
-                  </Typography>
-                  <Typography variant="h4" color="primary.main">
-                    {selectedRestaurant.name}
-                  </Typography>
-                  <Typography
-                    variant="subtitle1"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {selectedRestaurant.type}
-                  </Typography>
-                  
-                  {selectedRestaurant.editorialSummary && (
-                    <Box sx={{ mt: 2, mb: 2, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
-                      <Typography variant="body2" color="text.primary" sx={{ fontStyle: 'italic' }}>
-                        {selectedRestaurant.editorialSummary}
-                      </Typography>
-                    </Box>
-                  )}
+    <Container maxWidth="lg">
+      {/* Removed ad-blocker warning banner */}
+      {/* {showAdBlockerWarning && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          It looks like you might be using an ad blocker. Some map features may not work correctly.
+        </Alert>
+      )} */}
+      {geolocationError && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {geolocationError}
+        </Alert>
+      )}
+      <Box sx={{ my: 4, display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
+        <img src={logo} alt="Logo" style={{ width: "60px", height: "60px", marginRight: "20px" }} />
+        <Typography variant="h4" component="h1" sx={{ marginBottom: 0, display: "flex", alignItems: "center", height: "60px" }}>
+          Orlando Random Restaurant Picker
+        </Typography>
+      </Box>
 
-                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                    {selectedRestaurant.isOpen !== undefined && (
-                      <Chip 
-                        label={selectedRestaurant.isOpen ? '🟢 Open Now' : '🔴 Closed Now'} 
-                        color={selectedRestaurant.isOpen ? 'success' : 'error'} 
-                        variant="filled"
-                        size="small"
-                        sx={{ fontWeight: 'bold' }}
-                      />
-                    )}
-
-                    {selectedRestaurant.businessStatus && selectedRestaurant.businessStatus !== 'OPERATIONAL' && (
-                      <Chip 
-                        label={selectedRestaurant.businessStatus === 'CLOSED_TEMPORARILY' ? 'Temporarily Closed' : 'Permanently Closed'} 
-                        color="warning" 
-                        variant="outlined" 
-                        size="small"
-                      />
-                    )}
-                  </Box>
-                  
-                  {selectedRestaurant.rating && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
-                      <Rating value={selectedRestaurant.rating} readOnly precision={0.1} />
-                      <Typography variant="body2" sx={{ ml: 1 }}>
-                        {selectedRestaurant.rating.toFixed(1)}/5
-                      </Typography>
-                    </Box>
-                  )}
-
-                  {selectedRestaurant.priceLevel && (
-                    <Box sx={{ my: 1 }}>
-                      <Chip 
-                        label={`Price: ${'$'.repeat(selectedRestaurant.priceLevel)}`} 
-                        color="primary" 
-                        variant="outlined" 
-                        size="small"
-                      />
-                    </Box>
-                  )}
-
-                  {selectedRestaurant.address && (
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                      <strong>Address:</strong> {selectedRestaurant.address}
-                    </Typography>
-                  )}
-
-                  {selectedRestaurant.phoneNumber && (
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                      <strong>Phone:</strong> {selectedRestaurant.phoneNumber}
-                    </Typography>
-                  )}
-
-                  {selectedRestaurant.website && (
-                    <Box sx={{ mt: 1 }}>
-                      <Link
-                        href={selectedRestaurant.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        variant="body2"
-                      >
-                        Visit Website
-                      </Link>
-                    </Box>
-                  )}
-
-                  {selectedRestaurant.openingHours && selectedRestaurant.openingHours.length > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="subtitle2" gutterBottom>
-                        Opening Hours:
-                      </Typography>
-                      {selectedRestaurant.openingHours.map((hours, index) => (
-                        <Typography key={index} variant="body2" color="text.secondary">
-                          {hours}
-                        </Typography>
-                      ))}
-                    </Box>
-                  )}
-
-                  {selectedRestaurant.photos && selectedRestaurant.photos.length > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="subtitle2" gutterBottom>
-                        Photos:
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                        {selectedRestaurant.photos.map((photo, index) => (
-                          <CardMedia
-                            key={index}
-                            component="img"
-                            sx={{ 
-                              width: 120, 
-                              height: 80, 
-                              borderRadius: 1,
-                              objectFit: 'cover',
-                              cursor: 'pointer',
-                              transition: 'transform 0.2s ease-in-out',
-                              '&:hover': {
-                                transform: 'scale(1.05)',
-                              }
-                            }}
-                            image={photo}
-                            alt={`${selectedRestaurant.name} photo ${index + 1}`}
-                            onClick={() => handlePhotoClick(photo)}
-                          />
-                        ))}
-                      </Box>
-                    </Box>
-                  )}
-
-                  <Divider sx={{ my: 2 }} />
-
-                  {apiError && (
-                    <Alert severity="error" sx={{ mt: 1, mb: 1 }}>
-                      {apiError}
-                    </Alert>
-                  )}
-                  {distance && !apiError && (
-                    <Typography variant="subtitle1">
-                      Distance: {distance}
-                    </Typography>
-                  )}
-                  {mapCenter && !apiError && (
-                    <Link
-                      href={`https://www.google.com/maps/dir/?api=1&destination=${mapCenter.lat},${mapCenter.lng}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{ display: "block", mt: 1 }}
-                    >
-                      Get Directions
-                    </Link>
-                  )}
-                  {mapCenter && !apiError && (
-                    <RestaurantMap mapCenter={mapCenter} />
-                  )}
-                </Paper>
-              ) : (
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 3,
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minHeight: "200px",
-                  }}
-                >
-                  <Typography variant="h5" color="text.secondary">
-                    {isPicking
-                      ? "Finding a restaurant..."
-                      : "No restaurant selected yet"}
-                  </Typography>
-                </Paper>
-              )}
-            </Grid>
-          </Grid>
-        </Box>
-
-        {/* Photo Modal */}
-        <Modal
-          open={photoModalOpen}
-          onClose={handleClosePhotoModal}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: 2,
-          }}
-        >
-          <Box
-            sx={{
-              position: 'relative',
-              maxWidth: '95vw',
-              maxHeight: '95vh',
-              outline: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onClick={handleClosePhotoModal}
-          >
-            {selectedPhoto && (
-              <img
-                src={selectedPhoto}
-                alt="Restaurant enlarged view"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  borderRadius: '12px',
-                  boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)',
-                  transition: 'transform 0.3s ease-in-out',
-                }}
-              />
-            )}
-            <Typography
-              variant="caption"
-              sx={{
-                position: 'absolute',
-                bottom: -30,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                color: 'white',
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                padding: '4px 12px',
-                borderRadius: '16px',
-                fontSize: '0.75rem',
-              }}
+      <Box sx={{ my: 4 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <FiltersPanel
+              types={types}
+              selectedTypes={selectedTypes}
+              loading={false}
+              onToggleType={handleTypeChange}
+              onSelectAll={selectAllTypes}
+              onClearAll={deselectAllTypes}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={pickRandom}
+              fullWidth
+              size="large"
+              sx={{ py: 2, fontSize: "1.2rem" }}
+              disabled={leftDisabled || !placesReady}
             >
-            </Typography>
-          </Box>
-        </Modal>
-      </Container>
-    </APIProvider>
+              {isPicking ? <CircularProgress size={24} color="inherit" /> : "Pick a Random Restaurant"}
+            </Button>
+            {!placesReady && (
+              <Typography color="text.secondary" variant="caption" display="block" sx={{ mt: 1, textAlign: "center" }}>
+                Loading map services...
+              </Typography>
+            )}
+            {filtered.length === 0 && (
+              <Typography color="text.secondary" variant="caption" display="block" sx={{ mt: 1, textAlign: "center" }}>
+                Select at least one type or clear filters to pick.
+              </Typography>
+            )}
+          </Grid>
+
+          <Grid item xs={12} md={8}>
+            <RestaurantDetails
+              restaurant={selectedRestaurant}
+              apiError={apiError}
+              distance={distance}
+              mapCenter={mapCenter}
+              mapId={GOOGLE_MAP_ID}
+              onPhotoClick={handlePhotoClick}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <PhotoModal open={photoModalOpen} photoUrl={selectedPhoto} onClose={handleClosePhotoModal} />
+    </Container>
   );
 }
 

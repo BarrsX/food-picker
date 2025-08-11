@@ -1,25 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#FF6B35', // A vibrant orange
+      main: '#FF6B35',
       light: '#FF8C61',
       dark: '#E54B00',
       contrastText: '#FFFFFF',
     },
     secondary: {
-      main: '#004E89', // A complementary blue
+      main: '#004E89',
       light: '#0077D6',
       dark: '#003A66',
       contrastText: '#FFFFFF',
     },
     background: {
-      default: '#FFF0E5', // A light orange tint for the background
+      default: '#FFF0E5',
       paper: '#FFFFFF',
     },
     text: {
@@ -42,12 +43,11 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <APIProvider apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string} libraries={['places']}>
+        <App />
+      </APIProvider>
     </ThemeProvider>
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

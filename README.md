@@ -1,59 +1,53 @@
 # Orlando Random Restaurant Picker
 
-This React application helps users discover new restaurants in Orlando by randomly selecting a restaurant based on user preferences.
+This React + TypeScript app randomly picks an Orlando restaurant from a curated, typed list and enriches details with the Google Places API.
 
 ## Features
 
-- Random restaurant selection from a curated list of Orlando eateries
-- Filter restaurants by food type
-- Display restaurant information, including name, type, and distance from user
-- Show restaurant location on Google Maps
-- Responsive design for both desktop and mobile use
+- Random restaurant selection with category filters
+- Google Places enrichment (address, phone, website, rating, hours, photos)
+- Distance and ETA from current location
+- Map preview with Google Maps
+- Responsive UI (MUI)
 
-## Technologies Used
+## Tech
 
-- React
-- TypeScript
-- Material-UI (MUI) for styling
-- Google Maps API for location services and mapping
+- React 18, TypeScript
+- MUI (Material UI)
+- @vis.gl/react-google-maps (single Google Maps wrapper)
+
+## Data source
+
+- Restaurants are now sourced from a typed module at `src/data/restaurants.ts` (type `RestaurantList`). The legacy `public/restaurants.json` is no longer used and remains an empty `[]` only for backward compatibility.
 
 ## Getting Started
 
-1. Clone the repository
-2. Install dependencies with `npm install`
-3. Create a `.env` file in the root directory and add your Google Maps API key:
-   ```
-   REACT_APP_GOOGLE_MAPS_API_KEY=your_api_key_here
-   ```
-4. For local development:
-   - Run the app in development mode with `npm start`
-   - Open [http://localhost:3000](http://localhost:3000) to view it in the browser
-5. For deployment:
-   - Update the "homepage" field in `package.json` with your GitHub Pages URL
-   - Run `npm run deploy` to deploy to GitHub Pages
-
-## Available Scripts
-
-- `npm start`: Runs the app in development mode
-- `npm test`: Launches the test runner
-- `npm run build`: Builds the app for production
+1. Install dependencies
+   - npm install
+2. Configure environment variables (create `.env`)
+   - REACT_APP_GOOGLE_MAPS_API_KEY=your_api_key_here
+   - REACT_APP_GOOGLE_MAP_ID=your_map_id_here (optional but recommended for styled maps)
+3. Run the app
+   - npm start
+4. Build
+   - npm run build
 
 ## Deployment
 
-This app is deployed using GitHub Pages. To deploy your own version:
+- GitHub Pages via `gh-pages`
+  - Ensure `homepage` in `package.json` is set
+  - npm run deploy
 
-1. Ensure you have the `gh-pages` package installed (it's already in the devDependencies).
-2. In the `package.json` file, make sure the "homepage" field is set to your GitHub Pages URL.
-3. Run `npm run deploy` to build and deploy the app to GitHub Pages.
+## Development Notes
 
-## Live Demo
-
-The live version of this app is hosted at [https://xavionbarrs.com/food-picker](https://xavionbarrs.com/food-picker).
+- Single maps library: `@vis.gl/react-google-maps` handles script loading and the Places library via `useMapsLibrary('places')`.
+- The app no longer fetches restaurant data at runtime; it imports the list from `src/data/restaurants.ts`, enabling type-safety and removing a network request.
+- Components: `FiltersPanel`, `RestaurantDetails`, `RestaurantMap`, `PhotoModal`.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+PRs are welcome.
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+MIT
