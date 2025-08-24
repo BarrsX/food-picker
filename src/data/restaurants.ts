@@ -75,6 +75,7 @@ const restaurants: RestaurantList = [
   { name: "Uncle Tony's Backyard bbq", type: "BBQ/Smokehouse" },
   { name: "Kook'n with Kim", type: "Soul Food" },
   { name: "Voodoo Bayou", type: "Soul Food" },
+  { name: "Candee Lee's Soul House", type: "Soul Food" },
   { name: "Joury Ice Cream & Cafe", type: "Ice Cream/Gelato" },
   { name: "JoJos Shake Bar", type: "Ice Cream/Gelato" },
   { name: "Swirls on the Water", type: "Ice Cream/Gelato" },
