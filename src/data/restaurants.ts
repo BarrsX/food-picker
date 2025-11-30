@@ -168,6 +168,10 @@ const restaurants: RestaurantList = [
     name: "La Fonda Mexican Kitchen & Maya Thai Cuisine - Longwood",
     type: "International",
   },
+  {
+    name: "SLAP Hand Ripped Noodles",
+    type: "Ramen/Noodles",
+  },
 ];
 
 export default restaurants;
