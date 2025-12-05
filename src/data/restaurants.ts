@@ -172,6 +172,8 @@ const restaurants: RestaurantList = [
     name: "SLAP Hand Ripped Noodles",
     type: "Ramen/Noodles",
   },
+  { name: "Nando Grill Carne En Vara", type: "Mexican/Tex-Mex" },
+  { name: "Licious Noodles & Bao", type: "Chinese" },
 ];
 
 export default restaurants;
