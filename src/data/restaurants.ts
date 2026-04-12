@@ -212,6 +212,22 @@ const restaurants: RestaurantList = [
   { name: "Neko San", type: "Sushi" },
   { name: "Walter's Tavern", type: "American" },
   { name: "Mills Market", type: "Asian" },
+  { name: "Yumee Katsu", type: "Japanese" },
+  { name: "Sabai Thai Street Food", type: "Thai" },
+  { name: "Ming Garden", type: "Chinese" },
+  { name: "The Dough Show", type: "Pizza" },
+  { name: "The Jersey Spot Pizza and Pasta", type: "Pizza" },
+  { name: "Francisca Charcoal Chicken and Meats", type: "Hispanic" },
+  { name: "Budsaba Thai Bistro", type: "Thai" },
+  { name: "Sushi Saint", type: "Sushi" },
+  { name: "Unplugged Social Cafe", type: "Bakery/Café" },
+  { name: "Knights Curry Express", type: "International" },
+  { name: "Amalfi", type: "Italian" },
+  { name: "Tamara Lake Mary", type: "International" },
+  { name: "Raine's Pizzeria", type: "Pizza" },
+  { name: "Seoul Bōl", type: "Korean" },
+  { name: "The Human Bean", type: "Bakery/Café" },
+  { name: "Summer Breeze Roti Shop", type: "International" },
 ];
 
 export default restaurants;
